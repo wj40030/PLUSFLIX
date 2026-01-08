@@ -47,4 +47,24 @@ class Pages extends Controller {
         ];
         $this->view('pages/recommended', $data);
     }
+    public function admin(): void {
+        requireAdmin();
+
+        $data = [
+            'title' => 'Panel Administratora',
+            'description' => 'Witaj w panelu administratora'
+        ];
+        $this->view('pages/admin', $data);
+    }
+
+    public function watchlist(): void {
+        requireLogin();
+
+        $data = [
+            'title' => 'Watchlist',
+            'description' => 'To jest twoja watchlista'
+        ];
+
+        $this->view('pages/watchlist', $data);
+    }
 }
