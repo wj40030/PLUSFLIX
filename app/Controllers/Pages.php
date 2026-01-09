@@ -45,7 +45,8 @@ class Pages extends Controller {
 
         $data = [
             'title' => 'Panel Administratora',
-            'description' => 'Witaj w panelu administratora'
+            'description' => 'Zarządzanie aplikacją PLUSFLIX',
+            'css' => 'admin'
         ];
         $this->view('pages/admin', $data);
     }
