@@ -40,13 +40,6 @@ class Pages extends Controller {
         $this->view('pages/random', $data);
     }
 
-    public function recommended(): void {
-        $data = [
-            'title' => 'Polecane programy',
-            'description' => 'To jest strona z polecanymi programami.'
-        ];
-        $this->view('pages/recommended', $data);
-    }
     public function admin(): void {
         requireAdmin();
 

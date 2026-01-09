@@ -27,3 +27,41 @@ CREATE TABLE IF NOT EXISTS users (
 INSERT INTO users (username, password, role) VALUES
 ('user', 'user', 'user'),
 ('admin', 'tajne', 'admin');
+
+-- Tabela gatunkow
+CREATE TABLE IF NOT EXISTS genres (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    genre VARCHAR(50) NOT NULL
+);
+
+-- Przykladowe gatunki
+INSERT INTO genres (genre) VALUES
+('Animation'),
+('Horror');
+
+-- Tabela platform streamingowych
+CREATE TABLE IF NOT EXISTS streaming_sites (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  streaming_site VARCHAR(50) NOT NULL
+);
+
+-- Przykladowe platformy streamingowe
+INSERT INTO streaming_sites (streaming_site) VALUES
+('Netflix'),
+('Prime Video');
+
+-- Tabela serii
+CREATE TABLE IF NOT EXISTS series (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(50) NOT NULL,
+    description TEXT NOT NULL,
+    genre INT,
+    streaming_site INT,
+    FOREIGN KEY (genre) REFERENCES genres(id),
+    FOREIGN KEY (streaming_site) REFERENCES streaming_sites(id)
+);
+
+-- Przykladowe serie
+INSERT INTO series (title, description, genre, streaming_site) VALUES
+('Vox Machina', 'Przykładowa seria 1', 1, 2),
+('The Walking Dead', 'Przykładowa seria 2', 2, 1);
