@@ -51,9 +51,19 @@ class Pages extends Controller {
                 exit;
             }
 
+            $currentUserId = isLoggedIn() ? $_SESSION['user_id'] : null;
+            $ratings = $this->ratingModel->getRatingsByProductionId($id, $currentUserId);
+            $isInWatchlist = false;
+            if (isLoggedIn()) {
+                $isInWatchlist = $this->movieModel->isInWatchlist($currentUserId, $id);
+            }
+
             $data = [
                 'title' => $movie->title,
-                'movie' => $movie
+                'movie' => $movie,
+                'css' => 'reviews',
+                'ratings' => $ratings,
+                'isInWatchlist' => $isInWatchlist
             ];
 
             $this->view('pages/movie', $data);
