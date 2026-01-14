@@ -67,6 +67,18 @@ INSERT INTO productions (title, type, genre_id, description, year, rating) VALUE
 ('Interstellar', 'Film', 2, 'Podroz przez przestrzen kosmiczna w poszukiwaniu nowego domu dla ludzkosci.', 2014, 8.6),
 ('Friends', 'Serial', 6, 'Grupa przyjaciol w Nowym Jorku przez wzloty i upadki zycia.', 1994, 8.8),
 ('The Matrix', 'Film', 2, 'Haker odkrywa prawde o rzeczywistosci i swojej roli w wojnie przeciwko kontrolerom.', 1999, 8.7);
+    
+CREATE TABLE IF NOT EXISTS ratings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    production_id INT NOT NULL,
+    user_id INT NOT NULL,
+    rating INT NOT NULL,
+    comment TEXT,
+    is_approved TINYINT(1) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (production_id) REFERENCES productions(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
 
 CREATE TABLE IF NOT EXISTS series (
     id INT AUTO_INCREMENT PRIMARY KEY,

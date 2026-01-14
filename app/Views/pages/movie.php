@@ -28,6 +28,58 @@
             </div>
         </div>
     </div>
+
+    <div class="movie-reviews-section">
+        <h2>Recenzje i Oceny</h2>
+
+        <?php if (isLoggedIn()) : ?>
+            <div class="add-review-form">
+                <h3>Dodaj swoją ocenę</h3>
+                <form action="<?php echo URLROOT; ?>/pages/detail/<?php echo $data['movie']->id; ?>" method="post">
+                    <div class="form-group">
+                        <label for="rating">Ocena (1-10):</label>
+                        <select name="rating" id="rating" required class="form-control">
+                            <option value="">Wybierz ocenę</option>
+                            <?php for ($i = 10; $i >= 1; $i--) : ?>
+                                <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
+                            <?php endfor; ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="comment">Komentarz:</label>
+                        <textarea name="comment" id="comment" rows="3" class="form-control" placeholder="Co sądzisz o tym tytule?"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Opublikuj</button>
+                </form>
+            </div>
+        <?php else : ?>
+            <p><a href="<?php echo URLROOT; ?>/auth/login">Zaloguj się</a>, aby dodać ocenę.</p>
+        <?php endif; ?>
+
+        <div class="reviews-list">
+            <?php if (!empty($data['ratings'])) : ?>
+                <?php foreach ($data['ratings'] as $rating) : ?>
+                    <div class="review-item <?php echo !$rating->is_approved ? 'pending-review' : ''; ?>">
+                        <div class="review-header">
+                            <span class="review-author"><?php echo $rating->username; ?></span>
+                            <?php if (!$rating->is_approved) : ?>
+                                <span class="badge" style="background: orange;">Oczekuje na zatwierdzenie</span>
+                            <?php endif; ?>
+                            <span class="review-rating"><?php echo $rating->rating; ?>/10</span>
+                            <span class="review-date"><?php echo date('d.m.Y H:i', strtotime($rating->created_at)); ?></span>
+                        </div>
+                        <?php if (!empty($rating->comment)) : ?>
+                            <div class="review-comment">
+                                <?php echo htmlspecialchars($rating->comment); ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+            <?php else : ?>
+                <p>Brak ocen dla tego tytułu. Bądź pierwszy!</p>
+            <?php endif; ?>
+        </div>
+    </div>
 </div>
 
 <?php require APPROOT . '/Views/inc/footer.php'; ?>

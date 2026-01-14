@@ -136,15 +136,6 @@
     font-size: 1.2rem;
 }
 
-.badge {
-    padding: 3px 8px;
-    border-radius: 10px;
-    font-size: 0.8rem;
-    font-weight: bold;
-}
-.badge-admin { background: var(--primary); color: white; }
-.badge-user { background: #555; color: white; }
-
 .checkbox-group label {
     display: inline-block;
     margin-right: 15px;

@@ -7,10 +7,12 @@ use Core\Controller;
 class Pages extends Controller {
     private $exampleModel;
     private $movieModel;
+    private $ratingModel;
 
     public function __construct() {
         $this->exampleModel = $this->model('Example');
         $this->movieModel = $this->model('Movie');
+        $this->ratingModel = $this->model('Rating');
     }
 
     public function index(): void {
@@ -101,11 +103,43 @@ class Pages extends Controller {
     public function admin(): void {
         requireAdmin();
 
+        $ratings = $this->ratingModel->getAllRatings();
+
         $data = [
             'title' => 'Panel Administratora',
-            'description' => 'Witaj w panelu administratora'
+            'description' => 'Witaj w panelu administratora',
+            'css' => ['admin', 'reviews'],
+            'ratings' => $ratings
         ];
         $this->view('pages/admin', $data);
+    }
+
+    public function approveRating($id): void {
+        requireAdmin();
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            if ($this->ratingModel->approveRating($id)) {
+                header('Location: ' . URLROOT . '/pages/admin#comments');
+            } else {
+                die('Coś poszło nie tak');
+            }
+        } else {
+            header('Location: ' . URLROOT . '/pages/admin');
+        }
+    }
+
+    public function deleteRating($id): void {
+        requireAdmin();
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            if ($this->ratingModel->deleteRating($id)) {
+                header('Location: ' . URLROOT . '/pages/admin#comments');
+            } else {
+                die('Coś poszło nie tak');
+            }
+        } else {
+            header('Location: ' . URLROOT . '/pages/admin');
+        }
     }
 
     public function watchlist(): void {
@@ -125,6 +159,26 @@ class Pages extends Controller {
             exit;
         }
 
+        if ($_SERVER['REQUEST_METHOD'] == 'POST' && isLoggedIn()) {
+            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+            $data = [
+                'production_id' => $id,
+                'user_id' => $_SESSION['user_id'],
+                'rating' => isset($_POST['rating']) ? trim($_POST['rating']) : '',
+                'comment' => isset($_POST['comment']) ? trim($_POST['comment']) : ''
+            ];
+
+            if (!empty($data['rating'])) {
+                if ($this->ratingModel->addRating($data)) {
+                    header('Location: ' . URLROOT . '/pages/detail/' . $id);
+                    exit;
+                } else {
+                    die('Coś poszło nie tak przy dodawaniu oceny.');
+                }
+            }
+        }
+
         $movie = $this->movieModel->getMovieById($id);
 
         if (!$movie) {
@@ -132,9 +186,14 @@ class Pages extends Controller {
             exit;
         }
 
+        $currentUserId = isLoggedIn() ? $_SESSION['user_id'] : null;
+        $ratings = $this->ratingModel->getRatingsByProductionId($id, $currentUserId);
+
         $data = [
             'title' => $movie->title,
-            'movie' => $movie
+            'movie' => $movie,
+            'css' => 'reviews',
+            'ratings' => $ratings
         ];
 
         $this->view('pages/movie', $data);

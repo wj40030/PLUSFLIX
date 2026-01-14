@@ -123,32 +123,61 @@
                 </div>
             </section>
 
-            <section id="users" class="admin-section">
-                <h2>Użytkownicy</h2>
-                <table class="admin-table">
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Login</th>
-                        <th>Rola</th>
-                        <th>Akcje</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>admin</td>
-                        <td><span class="badge badge-admin">Admin</span></td>
-                        <td><button class="btn-sm btn-edit">Edytuj</button></td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>user</td>
-                        <td><span class="badge badge-user">User</span></td>
-                        <td><button class="btn-sm btn-edit">Edytuj</button></td>
-                    </tr>
-                    </tbody>
-                </table>
+            <section id="comments" class="admin-section">
+                <h2>Moderacja Komentarzy i Ocen</h2>
+                <div class="table-responsive">
+                    <table class="admin-table">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Użytkownik</th>
+                            <th>Produkcja</th>
+                            <th>Ocena</th>
+                            <th>Komentarz</th>
+                            <th>Data</th>
+                            <th>Status</th>
+                            <th>Akcje</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php if(!empty($data['ratings'])) : ?>
+                            <?php foreach($data['ratings'] as $rating) : ?>
+                            <tr>
+                                <td><?php echo $rating->id; ?></td>
+                                <td><?php echo $rating->username; ?></td>
+                                <td><?php echo $rating->production_title; ?></td>
+                                <td><?php echo $rating->rating; ?>/10</td>
+                                <td style="max-width: 300px;"><?php echo htmlspecialchars($rating->comment); ?></td>
+                                <td><?php echo date('d.m.Y H:i', strtotime($rating->created_at)); ?></td>
+                                <td>
+                                    <?php if($rating->is_approved) : ?>
+                                        <span class="badge" style="background: green;">Zatwierdzony</span>
+                                    <?php else : ?>
+                                        <span class="badge" style="background: orange;">Oczekuje</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <div style="display: flex; gap: 5px;">
+                                        <?php if(!$rating->is_approved) : ?>
+                                            <form action="<?php echo URLROOT; ?>/pages/approveRating/<?php echo $rating->id; ?>" method="post">
+                                                <button type="submit" class="btn-sm btn-edit">Zatwierdź</button>
+                                            </form>
+                                        <?php endif; ?>
+                                        <form action="<?php echo URLROOT; ?>/pages/deleteRating/<?php echo $rating->id; ?>" method="post" onsubmit="return confirm('Czy na pewno chcesz usunąć tę ocenę?');">
+                                            <button type="submit" class="btn-sm btn-delete">Usuń</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        <?php else : ?>
+                            <tr>
+                                <td colspan="7" style="text-align: center;">Brak komentarzy do wyświetlenia.</td>
+                            </tr>
+                        <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
             </section>
         </main>
     </div>

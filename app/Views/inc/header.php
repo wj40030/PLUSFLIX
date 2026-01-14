@@ -6,7 +6,13 @@
     <title><?php echo isset($data['title']) ? $data['title'] : SITENAME; ?></title>
     <link rel="stylesheet" href="<?php echo URLROOT; ?>/css/style.css">
     <?php if (isset($data['css'])) : ?>
-        <link rel="stylesheet" href="<?php echo URLROOT; ?>/css/<?php echo $data['css']; ?>.css">
+        <?php if (is_array($data['css'])) : ?>
+            <?php foreach ($data['css'] as $style) : ?>
+                <link rel="stylesheet" href="<?php echo URLROOT; ?>/css/<?php echo $style; ?>.css">
+            <?php endforeach; ?>
+        <?php else : ?>
+            <link rel="stylesheet" href="<?php echo URLROOT; ?>/css/<?php echo $data['css']; ?>.css">
+        <?php endif; ?>
     <?php endif; ?>
 </head>
 <body>
