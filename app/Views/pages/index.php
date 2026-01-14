@@ -89,7 +89,7 @@ searchInput.addEventListener('input', ({target}) => {
 
     latestMoviesTitle.style.display = term ? 'none' : 'block';
     searchResultsTitle.style.display = term ? 'block' : 'none';
-    dynamicSearchResults.style.display = term ? 'flex' : 'none';
+    dynamicSearchResults.style.display = term ? 'grid' : 'none';
 
     if (!term) return dynamicSearchResults.innerHTML = '';
 
