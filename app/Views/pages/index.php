@@ -101,21 +101,21 @@ searchInput.addEventListener('input', ({target}) => {
 
     if (searchTimeout) clearTimeout(searchTimeout);
 
-    if (!term) {
-        // Płynne zwijanie
+    if (term.length < 3) {
         const currentHeight = searchSectionWrapper.offsetHeight;
         searchSectionWrapper.style.height = currentHeight + 'px';
-        
+
         // Wymuszamy reflow przed zmianą na 0
         searchSectionWrapper.offsetHeight;
 
         searchSectionWrapper.style.gridTemplateRows = '0fr';
         searchSectionWrapper.style.height = '0px';
         dynamicSearchResults.classList.add('search-results-transitioning');
-        
+
         setTimeout(() => {
-            if (!searchInput.value.trim()) {
+            if (searchInput.value.trim().length < 3) {
                 dynamicSearchResults.innerHTML = '';
+                searchResultsTitle.innerText = 'Wyniki wyszukiwania';
             }
         }, 400);
         return;
@@ -131,37 +131,37 @@ searchInput.addEventListener('input', ({target}) => {
 
         // Zapamiętujemy poprzednią wysokość
         const oldHeight = searchSectionWrapper.offsetHeight;
-        
+
         // Ustawiamy stałą wysokość, aby umożliwić płynną animację zmniejszania/zwiększania
         searchSectionWrapper.style.height = oldHeight + 'px';
 
         // Najpierw przygotowujemy treść, ale trzymamy ją ukrytą (transitioning)
         dynamicSearchResults.classList.add('search-results-transitioning');
-        
+
         searchResultsTitle.innerText = found.length ? `Wyniki wyszukiwania dla: "${target.value}"` : 'Brak wyników';
-        
-        const content = found.map((movie, index) => createMovieCard(movie, index)).join('') 
+
+        const content = found.map((movie, index) => createMovieCard(movie, index)).join('')
             || '<p class="no-results animate-fade-in">Nie znaleziono filmów spełniających kryteria.</p>';
-        
+
         dynamicSearchResults.innerHTML = content;
-        
+
         // Płynne przejście do nowej wysokości
         searchSectionWrapper.style.gridTemplateRows = '1fr';
-        
-        // Używamy setTimeout(0) lub podwójnego requestAnimationFrame, aby przeglądarka 
+
+        // Używamy setTimeout(0) lub podwójnego requestAnimationFrame, aby przeglądarka
         // zarejestrowała nową zawartość przed obliczeniem scrollHeight
         setTimeout(() => {
             const newHeight = searchSectionContent.scrollHeight;
             searchSectionWrapper.style.height = newHeight + 'px';
-            
+
             // Po zakończeniu animacji (400ms) usuwamy sztywną wysokość, aby grid przejął kontrolę
             setTimeout(() => {
-                if (searchInput.value.trim()) {
+                if (searchInput.value.trim().length >= 3) {
                     searchSectionWrapper.style.height = 'auto';
                 }
             }, 400);
         }, 0);
-        
+
         // Pokazujemy wyniki z animacją
         setTimeout(() => {
             dynamicSearchResults.classList.remove('search-results-transitioning');
