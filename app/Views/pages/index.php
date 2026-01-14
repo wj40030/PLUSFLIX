@@ -68,10 +68,11 @@ const urlRoot = '<?php echo URLROOT; ?>';
 
 const allMovies = <?php echo json_encode($data['movies']); ?>;
 
-function createMovieCard(movie) {
+function createMovieCard(movie, index) {
     const ratingDisplay = movie.rating > 0 ? `${movie.rating}/10` : 'Brak ocen';
+    const delay = index * 0.1; // Staggered animation
     return `
-        <a href="${urlRoot}/pages/detail/${movie.id}" class="movie-card-link">
+        <a href="${urlRoot}/pages/detail/${movie.id}" class="movie-card-link animate-fade-in" style="animation-delay: ${delay}s">
             <div class="movie-card">
                 <h3 class="movie-title">${movie.title}</h3>
                 <p class="movie-description">${movie.description}</p>
@@ -86,27 +87,50 @@ function createMovieCard(movie) {
     `;
 }
 
+let searchTimeout;
+
 searchInput.addEventListener('input', ({target}) => {
     const term = target.value.trim().toLowerCase();
 
-    latestMoviesTitle.style.display = term ? 'none' : 'block';
-    searchResultsTitle.style.display = term ? 'block' : 'none';
-    dynamicSearchResults.style.display = term ? 'grid' : 'none';
+    if (searchTimeout) clearTimeout(searchTimeout);
 
     if (!term) {
+        latestMoviesTitle.style.display = 'block';
+        searchResultsTitle.style.display = 'none';
+        dynamicSearchResults.style.display = 'none';
         dynamicSearchResults.innerHTML = '';
         return;
     }
 
-    const found = allMovies.filter(movie => 
-        movie.title.toLowerCase().includes(term) || 
-        movie.description.toLowerCase().includes(term) || 
-        movie.genre.toLowerCase().includes(term) ||
-        movie.type.toLowerCase().includes(term)
-    );
+    // Dodajemy klasę przejścia i czyścimy stare wyniki
+    dynamicSearchResults.classList.add('search-results-transitioning');
+    dynamicSearchResults.innerHTML = '';
 
-    searchResultsTitle.innerText = found.length ? `Wyniki wyszukiwania dla: "${target.value}"` : 'Brak wyników';
-    dynamicSearchResults.innerHTML = found.map(createMovieCard).join('') || '<p class="no-results">Nie znaleziono filmów spełniających kryteria.</p>';
+    searchTimeout = setTimeout(() => {
+        latestMoviesTitle.style.display = 'none';
+        searchResultsTitle.style.display = 'block';
+        dynamicSearchResults.style.display = 'grid';
+
+        const found = allMovies.filter(movie => 
+            movie.title.toLowerCase().includes(term) || 
+            movie.description.toLowerCase().includes(term) || 
+            movie.genre.toLowerCase().includes(term) ||
+            movie.type.toLowerCase().includes(term)
+        );
+
+        searchResultsTitle.innerText = found.length ? `Wyniki wyszukiwania dla: "${target.value}"` : 'Brak wyników';
+        
+        // Render results
+        const content = found.map((movie, index) => createMovieCard(movie, index)).join('') 
+            || '<p class="no-results animate-fade-in">Nie znaleziono filmów spełniających kryteria.</p>';
+        
+        dynamicSearchResults.innerHTML = content;
+        
+        // Usuwamy klasę przejścia po renderowaniu
+        requestAnimationFrame(() => {
+            dynamicSearchResults.classList.remove('search-results-transitioning');
+        });
+    }, 300); // Mały delay dla lepszego efektu przejścia
 });
 </script>
 
