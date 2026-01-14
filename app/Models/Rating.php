@@ -28,10 +28,15 @@ class Rating extends Model {
         $this->db->bind(':user_id', $data['user_id']);
         $this->db->bind(':rating', $data['rating']);
         $this->db->bind(':comment', $data['comment']);
-        // Jeśli admin dodaje komentarz, może być od razu zatwierdzony, ale zgodnie z wymaganiem "administrator musi zaakceptować", załóżmy że domyślnie 0 dla wszystkich
-        $this->db->bind(':is_approved', 0);
+        
+        // Jeśli użytkownik jest adminem, ocena może być od razu zatwierdzona
+        $isApproved = isAdmin() ? 1 : 0;
+        $this->db->bind(':is_approved', $isApproved);
 
         if ($this->db->execute()) {
+            if ($isApproved) {
+                $this->updateProductionRating($data['production_id']);
+            }
             return true;
         } else {
             return false;
@@ -44,9 +49,17 @@ class Rating extends Model {
     }
 
     public function approveRating($id) {
+        // Najpierw pobierzmy production_id, aby móc zaktualizować średnią
+        $this->db->query('SELECT production_id FROM ratings WHERE id = :id');
+        $this->db->bind(':id', $id);
+        $rating = $this->db->single();
+        
         $this->db->query('UPDATE ratings SET is_approved = 1 WHERE id = :id');
         $this->db->bind(':id', $id);
         if ($this->db->execute()) {
+            if ($rating) {
+                $this->updateProductionRating($rating->production_id);
+            }
             return true;
         } else {
             return false;
@@ -54,12 +67,34 @@ class Rating extends Model {
     }
 
     public function deleteRating($id) {
+        // Pobierzmy production_id przed usunięciem
+        $this->db->query('SELECT production_id FROM ratings WHERE id = :id');
+        $this->db->bind(':id', $id);
+        $rating = $this->db->single();
+
         $this->db->query('DELETE FROM ratings WHERE id = :id');
         $this->db->bind(':id', $id);
         if ($this->db->execute()) {
+            if ($rating) {
+                $this->updateProductionRating($rating->production_id);
+            }
             return true;
         } else {
             return false;
         }
+    }
+
+    public function updateProductionRating($productionId) {
+        // Oblicz średnią z zatwierdzonych ocen
+        $this->db->query('SELECT AVG(rating) as avg_rating FROM ratings WHERE production_id = :production_id AND is_approved = 1');
+        $this->db->bind(':production_id', $productionId);
+        $row = $this->db->single();
+        $avgRating = $row->avg_rating ? round($row->avg_rating, 1) : 0;
+
+        // Aktualizuj tabelę productions
+        $this->db->query('UPDATE productions SET rating = :rating WHERE id = :id');
+        $this->db->bind(':rating', $avgRating);
+        $this->db->bind(':id', $productionId);
+        return $this->db->execute();
     }
 }

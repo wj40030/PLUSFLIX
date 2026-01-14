@@ -27,7 +27,7 @@
                     <span class="meta-item"><strong>Rok:</strong> <?php echo $data['movie']->year; ?></span>
                     <span class="meta-item"><strong>Gatunek:</strong> <?php echo $data['movie']->genre; ?></span>
                     <span class="meta-item"><strong>Typ:</strong> <?php echo $data['movie']->type; ?></span>
-                    <span class="meta-item rating"><strong>Ocena:</strong> <?php echo $data['movie']->rating; ?>/10</span>
+                    <span class="meta-item rating"><strong>Ocena:</strong> <?php echo ($data['movie']->rating > 0) ? $data['movie']->rating . '/10' : 'Brak ocen'; ?></span>
                 </div>
 
                 <div class="movie-description-full">

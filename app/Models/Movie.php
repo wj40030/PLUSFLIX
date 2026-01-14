@@ -12,6 +12,12 @@ class Movie extends Model {
     }
 
     public function getAllMovies() {
+        $this->db->query('SELECT id FROM productions');
+        $movies = $this->db->resultSet();
+        foreach($movies as $movie) {
+            $this->updateSingleMovieRating($movie->id);
+        }
+
         $this->db->query('SELECT p.*, g.name as genre FROM productions p LEFT JOIN genres g ON p.genre_id = g.id ORDER BY p.created_at DESC');
         return $this->db->resultSet();
     }
@@ -23,9 +29,24 @@ class Movie extends Model {
     }
 
     public function getMovieById($id) {
+        // Przelicz ocenę przed pobraniem szczegółów, aby mieć pewność, że jest aktualna
+        $this->updateSingleMovieRating($id);
         $this->db->query('SELECT p.*, g.name as genre FROM productions p LEFT JOIN genres g ON p.genre_id = g.id WHERE p.id = :id');
         $this->db->bind(':id', $id);
         return $this->db->single();
+    }
+
+    private function updateSingleMovieRating($id) {
+        $this->db->query('SELECT AVG(rating) as avg_rating FROM ratings WHERE production_id = :production_id AND is_approved = 1');
+        $this->db->bind(':production_id', $id);
+        $row = $this->db->single();
+        
+        $avgRating = ($row && $row->avg_rating !== null) ? round($row->avg_rating, 1) : 0;
+        
+        $this->db->query('UPDATE productions SET rating = :rating WHERE id = :id');
+        $this->db->bind(':rating', $avgRating);
+        $this->db->bind(':id', $id);
+        $this->db->execute();
     }
 
     public function getMoviesByGenre($genre) {
@@ -35,8 +56,13 @@ class Movie extends Model {
     }
 
     public function getRandomMovie() {
-        $this->db->query('SELECT p.*, g.name as genre FROM productions p LEFT JOIN genres g ON p.genre_id = g.id ORDER BY RAND() LIMIT 1');
-        return $this->db->single();
+        $this->db->query('SELECT id FROM productions ORDER BY RAND() LIMIT 1');
+        $movie = $this->db->single();
+        if ($movie) {
+            $this->updateSingleMovieRating($movie->id);
+            return $this->getMovieById($movie->id);
+        }
+        return null;
     }
 
     public function addToWatchlist($userId, $movieId) {

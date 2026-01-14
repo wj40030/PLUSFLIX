@@ -38,7 +38,7 @@
                         <div class="movie-details">
                             <p><strong>Rok:</strong> <?php echo $movie->year; ?></p>
                             <p><strong>Gatunek:</strong> <?php echo $movie->genre; ?></p>
-                            <p><strong>Ocena:</strong> <?php echo $movie->rating; ?>/10</p>
+                            <p><strong>Ocena:</strong> <?php echo ($movie->rating > 0) ? $movie->rating . '/10' : 'Brak ocen'; ?></p>
                         </div>
                     </div>
                 </a>
@@ -68,6 +68,7 @@ const urlRoot = '<?php echo URLROOT; ?>';
 const allMovies = <?php echo json_encode($data['movies']); ?>;
 
 function createMovieCard(movie) {
+    const ratingDisplay = movie.rating > 0 ? `${movie.rating}/10` : 'Brak ocen';
     return `
         <a href="${urlRoot}/pages/detail/${movie.id}" class="movie-card-link">
             <div class="movie-card">
@@ -76,7 +77,7 @@ function createMovieCard(movie) {
                 <div class="movie-details">
                     <p><strong>Rok:</strong> ${movie.year}</p>
                     <p><strong>Gatunek:</strong> ${movie.genre}</p>
-                    <p><strong>Ocena:</strong> ${movie.rating}/10</p>
+                    <p><strong>Ocena:</strong> ${ratingDisplay}</p>
                 </div>
             </div>
         </a>

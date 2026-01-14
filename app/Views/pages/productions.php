@@ -16,7 +16,7 @@
                         <div class="movie-details">
                             <p><strong>Rok:</strong> <?php echo $movie->year; ?></p>
                             <p><strong>Gatunek:</strong> <?php echo $movie->genre; ?></p>
-                            <p><strong>Ocena:</strong> <?php echo $movie->rating; ?>/10</p>
+                            <p><strong>Ocena:</strong> <?php echo ($movie->rating > 0) ? $movie->rating . '/10' : 'Brak ocen'; ?></p>
                         </div>
                     </div>
                 </a>
