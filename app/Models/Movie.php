@@ -97,4 +97,48 @@ class Movie extends Model {
         $this->db->single();
         return $this->db->rowCount() > 0;
     }
+    public function addMovie($data) {
+        $this->db->query('INSERT INTO productions (title, type, genre_id, description, year, rating) VALUES (:title, :type, :genre_id, :description, :year, :rating)');
+        $this->db->bind(':title', $data['title']);
+        $this->db->bind(':type', $data['type']);
+        $this->db->bind(':genre_id', $data['genre_id']);
+        $this->db->bind(':description', $data['description']);
+        $this->db->bind(':year', $data['year']);
+        $this->db->bind(':rating', 0);
+        return $this->db->execute();
+    }
+
+    public function deleteMovie($id) {
+        $this->db->query('DELETE FROM productions WHERE id = :id');
+        $this->db->bind(':id', $id);
+        return $this->db->execute();
+    }
+
+    public function updateMovie($id, $data) {
+        $this->db->query('UPDATE productions SET title = :title, type = :type, genre_id = :genre_id, description = :description, year = :year WHERE id = :id');
+        $this->db->bind(':id', $id);
+        $this->db->bind(':title', $data['title']);
+        $this->db->bind(':type', $data['type']);
+        $this->db->bind(':genre_id', $data['genre_id']);
+        $this->db->bind(':description', $data['description']);
+        $this->db->bind(':year', $data['year']);
+        return $this->db->execute();
+    }
+    public function getMoviesWithPagination($limit, $offset) {
+        $this->db->query('SELECT p.*, g.name as genre 
+                      FROM productions p 
+                      LEFT JOIN genres g ON p.genre_id = g.id 
+                      ORDER BY p.created_at DESC 
+                      LIMIT :limit OFFSET :offset');
+        $this->db->bind(':limit', $limit);
+        $this->db->bind(':offset', $offset);
+        return $this->db->resultSet();
+    }
+
+    public function getTotalMoviesCount() {
+        $this->db->query('SELECT COUNT(*) as total FROM productions');
+        $row = $this->db->single();
+        return $row->total;
+    }
 }
+

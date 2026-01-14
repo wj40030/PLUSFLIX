@@ -101,3 +101,14 @@ CREATE TABLE IF NOT EXISTS series (
 INSERT INTO series (title, description, genre, streaming_site) VALUES
 ('Vox Machina', 'Przykladowa seria 1', 'Fantasy', 'Amazon Prime'),
 ('The Walking Dead', 'Przykladowa seria 2', 'Horror', 'Netflix');
+
+CREATE TABLE IF NOT EXISTS streaming_platforms (
+                                                   id INT AUTO_INCREMENT PRIMARY KEY,
+                                                   name VARCHAR(100) NOT NULL,
+    price DECIMAL(10,2),
+    offer TEXT
+    );
+
+INSERT INTO streaming_platforms (name, price, offer) VALUES
+                                                         ('Netflix', 43.00, '4K, 4 Ekrany'),
+                                                         ('Prime Video', 10.99, 'Darmowa dostawa, Video, Gaming');

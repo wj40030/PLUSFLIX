@@ -8,68 +8,207 @@ class Pages extends Controller {
     private $exampleModel;
     private $movieModel;
     private $ratingModel;
+    private $userModel;
+    private $genreModel;
 
     public function __construct() {
         $this->exampleModel = $this->model('Example');
         $this->movieModel = $this->model('Movie');
         $this->ratingModel = $this->model('Rating');
+        $this->userModel = $this->model('User');
+        $this->genreModel = $this->model('Genre');
     }
 
     public function index(): void {
         $examples = $this->exampleModel->getTestData();
         $movies = $this->movieModel->getAllMovies();
 
-        $searchTerm = '';
-        $searchResults = [];
-
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $searchTerm = isset($_POST['search']) ? trim($_POST['search']) : '';
-
-            if (!empty($searchTerm)) {
-                $searchResults = $this->movieModel->searchMovies($searchTerm);
-            }
-        }
-
         $data = [
             'title' => 'Witaj',
             'description' => 'To jest strona glowna aplikacji PLUSFLIX.',
             'examples' => $examples,
             'movies' => $movies,
-            'searchTerm' => $searchTerm,
-            'searchResults' => $searchResults
+            'searchTerm' => '',
+            'searchResults' => []
         ];
 
         $this->view('pages/index', $data);
     }
 
-    public function productions($id = null): void {
-        if ($id) {
+    public function admin($page = 1): void {
+        requireAdmin();
+
+        $limit = 10;
+        $offset = ($page - 1) * $limit;
+
+        $totalMovies = $this->movieModel->getTotalMoviesCount();
+        $movies = $this->movieModel->getMoviesWithPagination($limit, $offset);
+
+        $ratings = $this->ratingModel->getAllRatings();
+        $platforms = $this->model('Streaming')->all();
+
+        $stats = [
+            'users' => 'N/A',
+            'movies' => $totalMovies,
+            'ratings' => count($ratings)
+        ];
+
+        $data = [
+            'movies' => $movies,
+            'ratings' => $ratings,
+            'platforms' => $platforms,
+            'currentPage' => (int)$page,
+            'totalPages' => ceil($totalMovies / $limit),
+            'stats' => $stats,
+            'css' => ['admin', 'reviews']
+        ];
+
+        $this->view('pages/admin', $data);
+    }
+
+    public function addProduction(): void {
+        requireAdmin();
+
+        $genres = $this->genreModel->getAllGenres();
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+            $data = [
+                'title' => trim($_POST['title']),
+                'type' => trim($_POST['type']),
+                'genre_id' => $_POST['genre_id'],
+                'description' => trim($_POST['description']),
+                'year' => $_POST['year']
+            ];
+
+            if ($this->movieModel->addMovie($data)) {
+                header('Location: ' . URLROOT . '/pages/admin#productions');
+                exit;
+            }
+        } else {
+            $data = [
+                'title' => 'Dodaj Nową Produkcję',
+                'genres' => $genres,
+                'css' => 'admin'
+            ];
+            $this->view('pages/add_production', $data);
+        }
+    }
+
+    public function editProduction($id): void {
+        requireAdmin();
+
+        $genres = $this->genreModel->getAllGenres();
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+            $data = [
+                'id' => $id,
+                'title' => trim($_POST['title']),
+                'type' => trim($_POST['type']),
+                'genre_id' => $_POST['genre_id'],
+                'description' => trim($_POST['description']),
+                'year' => $_POST['year']
+            ];
+
+            if ($this->movieModel->updateMovie($id, $data)) {
+                header('Location: ' . URLROOT . '/pages/admin#productions');
+                exit;
+            } else {
+                die('Błąd podczas aktualizacji.');
+            }
+        } else {
             $movie = $this->movieModel->getMovieById($id);
 
             if (!$movie) {
-                header('Location: ' . URLROOT);
+                header('Location: ' . URLROOT . '/pages/admin');
                 exit;
             }
 
-            $currentUserId = isLoggedIn() ? $_SESSION['user_id'] : null;
-            $ratings = $this->ratingModel->getRatingsByProductionId($id, $currentUserId);
-            $isInWatchlist = false;
-            if (isLoggedIn()) {
-                $isInWatchlist = $this->movieModel->isInWatchlist($currentUserId, $id);
-            }
-
             $data = [
-                'title' => $movie->title,
+                'title' => 'Edytuj: ' . $movie->title,
                 'movie' => $movie,
-                'css' => 'reviews',
-                'ratings' => $ratings,
-                'isInWatchlist' => $isInWatchlist
+                'genres' => $genres, // Przekazujemy gatunki do widoku
+                'css' => 'admin'
             ];
 
-            $this->view('pages/movie', $data);
+            $this->view('pages/edit_production', $data);
+        }
+    }
+
+    public function deleteProduction($id): void {
+        requireAdmin();
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $this->movieModel->deleteMovie($id);
+            header('Location: ' . URLROOT . '/pages/admin#productions');
+        }
+    }
+
+    public function approveRating($id): void {
+        requireAdmin();
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            if ($this->ratingModel->approveRating($id)) {
+                header('Location: ' . URLROOT . '/pages/admin#comments');
+            }
+        }
+    }
+
+    public function deleteRating($id): void {
+        requireAdmin();
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            if ($this->ratingModel->deleteRating($id)) {
+                header('Location: ' . URLROOT . '/pages/admin#comments');
+            }
+        }
+    }
+
+    public function detail($id = null): void {
+        if (!$id) {
+            header('Location: ' . URLROOT);
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST' && isLoggedIn()) {
+            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+            $reviewData = [
+                'production_id' => $id,
+                'user_id' => $_SESSION['user_id'],
+                'rating' => trim($_POST['rating']),
+                'comment' => trim($_POST['comment'])
+            ];
+
+            if (!empty($reviewData['rating'])) {
+                $this->ratingModel->addRating($reviewData);
+                header('Location: ' . URLROOT . '/pages/detail/' . $id);
+                exit;
+            }
+        }
+
+        $movie = $this->movieModel->getMovieById($id);
+        if (!$movie) {
+            header('Location: ' . URLROOT);
+            exit;
+        }
+
+        $data = [
+            'title' => $movie->title,
+            'movie' => $movie,
+            'css' => 'reviews',
+            'ratings' => $this->ratingModel->getRatingsByProductionId($id, isLoggedIn() ? $_SESSION['user_id'] : null),
+            'isInWatchlist' => isLoggedIn() ? $this->movieModel->isInWatchlist($_SESSION['user_id'], $id) : false
+        ];
+
+        $this->view('pages/movie', $data);
+    }
+
+    public function productions($id = null): void {
+        if ($id) {
+            $this->detail($id);
         } else {
             $movies = $this->movieModel->getAllMovies();
-
             $data = [
                 'title' => 'Produkcje',
                 'description' => 'Wszystkie dostepne filmy',
@@ -83,22 +222,18 @@ class Pages extends Controller {
     public function search(): void {
         $searchTerm = '';
         $movies = [];
-
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $searchTerm = isset($_POST['search']) ? trim($_POST['search']) : '';
-
             if (!empty($searchTerm)) {
                 $movies = $this->movieModel->searchMovies($searchTerm);
             }
         }
-
         $data = [
             'title' => 'Wyszukiwanie filmów',
             'description' => 'Znajdź swój ulubiony film',
             'movies' => $movies,
             'searchTerm' => $searchTerm
         ];
-
         $this->view('pages/search', $data);
     }
 
@@ -107,7 +242,6 @@ class Pages extends Controller {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $movie = $this->movieModel->getRandomMovie();
         }
-
         $data = [
             'title' => 'Losuj Produkcję',
             'description' => 'Nie wiesz co obejrzeć? Wylosuj coś dla siebie!',
@@ -116,60 +250,15 @@ class Pages extends Controller {
         $this->view('pages/random', $data);
     }
 
-    public function admin(): void {
-        requireAdmin();
-
-        $ratings = $this->ratingModel->getAllRatings();
-
-        $data = [
-            'title' => 'Panel Administratora',
-            'description' => 'Witaj w panelu administratora',
-            'css' => ['admin', 'reviews'],
-            'ratings' => $ratings
-        ];
-        $this->view('pages/admin', $data);
-    }
-
-    public function approveRating($id): void {
-        requireAdmin();
-
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            if ($this->ratingModel->approveRating($id)) {
-                header('Location: ' . URLROOT . '/pages/admin#comments');
-            } else {
-                die('Coś poszło nie tak');
-            }
-        } else {
-            header('Location: ' . URLROOT . '/pages/admin');
-        }
-    }
-
-    public function deleteRating($id): void {
-        requireAdmin();
-
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            if ($this->ratingModel->deleteRating($id)) {
-                header('Location: ' . URLROOT . '/pages/admin#comments');
-            } else {
-                die('Coś poszło nie tak');
-            }
-        } else {
-            header('Location: ' . URLROOT . '/pages/admin');
-        }
-    }
-
     public function watchlist(): void {
         requireLogin();
-
         $movies = $this->movieModel->getWatchlist($_SESSION['user_id']);
-
         $data = [
             'title' => 'Twoja Watchlista',
             'description' => 'Produkcje, które chcesz obejrzeć.',
             'movies' => $movies,
             'css' => 'productions'
         ];
-
         $this->view('pages/watchlist', $data);
     }
 
@@ -178,8 +267,6 @@ class Pages extends Controller {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $this->movieModel->addToWatchlist($_SESSION['user_id'], $id);
             header('Location: ' . URLROOT . '/pages/detail/' . $id);
-        } else {
-            header('Location: ' . URLROOT);
         }
     }
 
@@ -187,65 +274,11 @@ class Pages extends Controller {
         requireLogin();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $this->movieModel->removeFromWatchlist($_SESSION['user_id'], $id);
-            // Sprawdzamy skąd przyszło żądanie, aby wrócić na tę samą stronę
             if (isset($_SERVER['HTTP_REFERER'])) {
                 header('Location: ' . $_SERVER['HTTP_REFERER']);
             } else {
                 header('Location: ' . URLROOT . '/pages/watchlist');
             }
-        } else {
-            header('Location: ' . URLROOT);
         }
-    }
-
-    public function detail($id = null): void {
-        if (!$id) {
-            header('Location: ' . URLROOT);
-            exit;
-        }
-
-        if ($_SERVER['REQUEST_METHOD'] == 'POST' && isLoggedIn()) {
-            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-
-            $data = [
-                'production_id' => $id,
-                'user_id' => $_SESSION['user_id'],
-                'rating' => isset($_POST['rating']) ? trim($_POST['rating']) : '',
-                'comment' => isset($_POST['comment']) ? trim($_POST['comment']) : ''
-            ];
-
-            if (!empty($data['rating'])) {
-                if ($this->ratingModel->addRating($data)) {
-                    header('Location: ' . URLROOT . '/pages/detail/' . $id);
-                    exit;
-                } else {
-                    die('Coś poszło nie tak przy dodawaniu oceny.');
-                }
-            }
-        }
-
-        $movie = $this->movieModel->getMovieById($id);
-
-        if (!$movie) {
-            header('Location: ' . URLROOT);
-            exit;
-        }
-
-        $currentUserId = isLoggedIn() ? $_SESSION['user_id'] : null;
-        $ratings = $this->ratingModel->getRatingsByProductionId($id, $currentUserId);
-        $isInWatchlist = false;
-        if (isLoggedIn()) {
-            $isInWatchlist = $this->movieModel->isInWatchlist($currentUserId, $id);
-        }
-
-        $data = [
-            'title' => $movie->title,
-            'movie' => $movie,
-            'css' => 'reviews',
-            'ratings' => $ratings,
-            'isInWatchlist' => $isInWatchlist
-        ];
-
-        $this->view('pages/movie', $data);
     }
 }

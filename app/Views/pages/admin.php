@@ -3,11 +3,10 @@
     <div class="admin-container">
         <aside class="admin-sidebar">
             <h2>Panel Admina</h2>
-            <nav>
+            <nav id="admin-nav">
                 <a href="#dashboard" class="active">Pulpit</a>
                 <a href="#productions">Produkcje</a>
                 <a href="#streaming">Platformy VOD</a>
-                <a href="#users">Użytkownicy</a>
                 <a href="#comments">Komentarze</a>
             </nav>
         </aside>
@@ -18,15 +17,15 @@
                 <div class="stats-grid">
                     <div class="stat-card">
                         <h3>Użytkownicy</h3>
-                        <p class="stat-number">1,245</p>
+                        <p class="stat-number">N/A</p>
                     </div>
                     <div class="stat-card">
                         <h3>Produkcje</h3>
-                        <p class="stat-number">84</p>
+                        <p class="stat-number"><?php echo $data['stats']['movies']; ?></p>
                     </div>
                     <div class="stat-card">
                         <h3>Komentarze</h3>
-                        <p class="stat-number">342</p>
+                        <p class="stat-number"><?php echo $data['stats']['ratings']; ?></p>
                     </div>
                 </div>
             </section>
@@ -34,92 +33,65 @@
             <section id="productions" class="admin-section">
                 <div class="section-header">
                     <h2>Zarządzanie Produkcjami</h2>
-                    <button class="btn btn-primary">+ Dodaj Produkcję</button>
+                    <a href="<?php echo URLROOT; ?>/pages/addProduction" class="btn btn-primary">+ Dodaj Produkcję</a>
                 </div>
 
                 <div class="table-responsive">
                     <table class="admin-table">
                         <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Tytuł</th>
-                            <th>Gatunek</th>
-                            <th>Platforma</th>
-                            <th>Akcje</th>
-                        </tr>
+                        <tr><th>ID</th><th>Tytuł</th><th>Gatunek</th><th>Akcje</th></tr>
                         </thead>
                         <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Vox Machina</td>
-                            <td>Animacja</td>
-                            <td>Prime Video</td>
-                            <td>
-                                <button class="btn-sm btn-edit">Edytuj</button>
-                                <button class="btn-sm btn-delete">Usuń</button>
-                            </td>
-                        </tr>
+                        <?php if(!empty($data['movies'])) : ?>
+                            <?php foreach($data['movies'] as $movie) : ?>
+                                <tr>
+                                    <td>#<?php echo $movie->id; ?></td>
+                                    <td><strong><?php echo $movie->title; ?></strong></td>
+                                    <td><?php echo $movie->genre; ?></td>
+                                    <td>
+                                        <div style="display: flex; gap: 5px;">
+                                            <a href="<?php echo URLROOT; ?>/pages/editProduction/<?php echo $movie->id; ?>" class="btn-sm btn-edit">Edytuj</a>
+                                            <form action="<?php echo URLROOT; ?>/pages/deleteProduction/<?php echo $movie->id; ?>" method="post" onsubmit="return confirm('Czy na pewno chcesz usunąć tę produkcję?');">
+                                                <button type="submit" class="btn-sm btn-delete">Usuń</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else : ?>
+                            <tr><td colspan="4" style="text-align: center;">Brak produkcji do wyświetlenia.</td></tr>
+                        <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
 
-                <div class="form-box" style="margin-top: 30px; border-top: 1px solid #444; padding-top: 20px;">
-                    <h3>Formularz Produkcji (Makieta)</h3>
-                    <form>
-                        <div class="form-group">
-                            <label>Tytuł filmu/serialu</label>
-                            <input type="text" class="form-control" placeholder="Wpisz tytuł">
-                        </div>
-                        <div class="form-group">
-                            <label>Przypisz do Streamingu</label>
-                            <select class="form-control">
-                                <option>Netflix</option>
-                                <option>Prime Video</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Kategorie / Tagi</label>
-                            <div class="checkbox-group">
-                                <label><input type="checkbox"> Horror</label>
-                                <label><input type="checkbox"> Sci-Fi</label>
-                                <label><input type="checkbox"> Dramat</label>
-                            </div>
-                        </div>
-                        <button class="btn btn-primary">Zapisz</button>
-                    </form>
-                </div>
+                <?php if($data['totalPages'] > 1) : ?>
+                    <div class="pagination" style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
+                        <?php for($i = 1; $i <= $data['totalPages']; $i++) : ?>
+                            <a href="<?php echo URLROOT; ?>/pages/admin/<?php echo $i; ?>#productions"
+                               class="btn-sm <?php echo ($i == $data['currentPage']) ? 'btn-primary' : 'btn-edit'; ?>"
+                               style="text-decoration: none;">
+                                <?php echo $i; ?>
+                            </a>
+                        <?php endfor; ?>
+                    </div>
+                <?php endif; ?>
             </section>
 
             <section id="streaming" class="admin-section">
-                <div class="section-header">
-                    <h2>Platformy Streamingowe</h2>
-                    <button class="btn btn-primary">+ Nowa Platforma</button>
-                </div>
-
+                <h2>Platformy Streamingowe</h2>
                 <div class="grid-streaming">
-                    <div class="streaming-card">
-                        <div class="streaming-header">
-                            <h3>Netflix</h3>
-                            <div class="actions">
-                                <button class="btn-icon">✏️</button>
-                                <button class="btn-icon">🗑️</button>
+                    <?php if(!empty($data['platforms'])) : ?>
+                        <?php foreach($data['platforms'] as $platform) : ?>
+                            <div class="streaming-card">
+                                <h3><?php echo $platform->name; ?></h3>
+                                <p><strong>Cena:</strong> <?php echo $platform->price; ?> PLN</p>
+                                <p><strong>Oferta:</strong> <?php echo $platform->offer; ?></p>
                             </div>
-                        </div>
-                        <p><strong>Cena:</strong> 43.00 PLN</p>
-                        <p><strong>Oferta:</strong> 4K, 4 Ekrany</p>
-                    </div>
-
-                    <div class="streaming-card">
-                        <div class="streaming-header">
-                            <h3>Prime Video</h3>
-                            <div class="actions">
-                                <button class="btn-icon">✏️</button>
-                                <button class="btn-icon">🗑️</button>
-                            </div>
-                        </div>
-                        <p><strong>Cena:</strong> 10.99 PLN</p>
-                        <p><strong>Oferta:</strong> Darmowa dostawa, Video, Gaming</p>
-                    </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <p>Brak danych o platformach.</p>
+                    <?php endif; ?>
                 </div>
             </section>
 
@@ -133,7 +105,6 @@
                             <th>Użytkownik</th>
                             <th>Produkcja</th>
                             <th>Ocena</th>
-                            <th>Komentarz</th>
                             <th>Data</th>
                             <th>Status</th>
                             <th>Akcje</th>
@@ -142,38 +113,33 @@
                         <tbody>
                         <?php if(!empty($data['ratings'])) : ?>
                             <?php foreach($data['ratings'] as $rating) : ?>
-                            <tr>
-                                <td><?php echo $rating->id; ?></td>
-                                <td><?php echo $rating->username; ?></td>
-                                <td><?php echo $rating->production_title; ?></td>
-                                <td><?php echo $rating->rating; ?>/10</td>
-                                <td style="max-width: 300px;"><?php echo htmlspecialchars($rating->comment); ?></td>
-                                <td><?php echo date('d.m.Y H:i', strtotime($rating->created_at)); ?></td>
-                                <td>
-                                    <?php if($rating->is_approved) : ?>
-                                        <span class="badge" style="background: green;">Zatwierdzony</span>
-                                    <?php else : ?>
-                                        <span class="badge" style="background: orange;">Oczekuje</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <div style="display: flex; gap: 5px;">
-                                        <?php if(!$rating->is_approved) : ?>
-                                            <form action="<?php echo URLROOT; ?>/pages/approveRating/<?php echo $rating->id; ?>" method="post">
-                                                <button type="submit" class="btn-sm btn-edit">Zatwierdź</button>
+                                <tr>
+                                    <td><?php echo $rating->id; ?></td>
+                                    <td><?php echo $rating->username; ?></td>
+                                    <td><?php echo $rating->production_title; ?></td>
+                                    <td><?php echo $rating->rating; ?>/10</td>
+                                    <td><?php echo date('d.m.Y H:i', strtotime($rating->created_at)); ?></td>
+                                    <td>
+                                        <span class="badge" style="background: <?php echo $rating->is_approved ? 'green' : 'orange'; ?>;">
+                                            <?php echo $rating->is_approved ? 'Zatwierdzony' : 'Oczekuje'; ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div style="display: flex; gap: 5px;">
+                                            <?php if(!$rating->is_approved) : ?>
+                                                <form action="<?php echo URLROOT; ?>/pages/approveRating/<?php echo $rating->id; ?>" method="post">
+                                                    <button type="submit" class="btn-sm btn-edit">Zatwierdź</button>
+                                                </form>
+                                            <?php endif; ?>
+                                            <form action="<?php echo URLROOT; ?>/pages/deleteRating/<?php echo $rating->id; ?>" method="post" onsubmit="return confirm('Usunąć ocenę?');">
+                                                <button type="submit" class="btn-sm btn-delete">Usuń</button>
                                             </form>
-                                        <?php endif; ?>
-                                        <form action="<?php echo URLROOT; ?>/pages/deleteRating/<?php echo $rating->id; ?>" method="post" onsubmit="return confirm('Czy na pewno chcesz usunąć tę ocenę?');">
-                                            <button type="submit" class="btn-sm btn-delete">Usuń</button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
+                                        </div>
+                                    </td>
+                                </tr>
                             <?php endforeach; ?>
                         <?php else : ?>
-                            <tr>
-                                <td colspan="7" style="text-align: center;">Brak komentarzy do wyświetlenia.</td>
-                            </tr>
+                            <tr><td colspan="7" style="text-align: center;">Brak komentarzy.</td></tr>
                         <?php endif; ?>
                         </tbody>
                     </table>
@@ -181,5 +147,27 @@
             </section>
         </main>
     </div>
+
+    <script>
+        const navLinks = document.querySelectorAll('#admin-nav a');
+        const sections = document.querySelectorAll('.admin-section');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 150) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
 
 <?php require APPROOT . '/Views/inc/footer.php'; ?>
