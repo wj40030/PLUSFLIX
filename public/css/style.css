@@ -405,3 +405,11 @@ footer {
     height: 100%;
     width: 100%;
 }
+
+.no-results {
+    text-align: center;
+    color: #999;
+    font-size: 1.2rem;
+    margin-top: 50px;
+    grid-column: 1 / -1;
+}

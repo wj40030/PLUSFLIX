@@ -19,8 +19,8 @@
             </div>
         </div>
     </div>
-    <h2 class="section-title" id="searchResultsTitle" style="display:none;">Wyniki wyszukiwania</h2>
-    <div class="movies-grid" id="dynamicSearchResults"></div>
+    <h2 class="section-title" id="searchResultsTitle" style="display:none; margin-bottom: 20px;">Wyniki wyszukiwania</h2>
+    <div class="movies-grid" id="dynamicSearchResults" style="display:none;"></div>
 
     <h2 class="section-title" id="latestMoviesTitle">Najnowsze filmy</h2>
     <?php if (!empty($data['movies'])): ?>
@@ -38,6 +38,7 @@
                         <div class="movie-details">
                             <p><strong>Rok:</strong> <?php echo $movie->year; ?></p>
                             <p><strong>Gatunek:</strong> <?php echo $movie->genre; ?></p>
+                            <p><strong>Typ:</strong> <?php echo $movie->type; ?></p>
                             <p><strong>Ocena:</strong> <?php echo ($movie->rating > 0) ? $movie->rating . '/10' : 'Brak ocen'; ?></p>
                         </div>
                     </div>
@@ -77,6 +78,7 @@ function createMovieCard(movie) {
                 <div class="movie-details">
                     <p><strong>Rok:</strong> ${movie.year}</p>
                     <p><strong>Gatunek:</strong> ${movie.genre}</p>
+                    <p><strong>Typ:</strong> ${movie.type}</p>
                     <p><strong>Ocena:</strong> ${ratingDisplay}</p>
                 </div>
             </div>
@@ -91,12 +93,20 @@ searchInput.addEventListener('input', ({target}) => {
     searchResultsTitle.style.display = term ? 'block' : 'none';
     dynamicSearchResults.style.display = term ? 'grid' : 'none';
 
-    if (!term) return dynamicSearchResults.innerHTML = '';
+    if (!term) {
+        dynamicSearchResults.innerHTML = '';
+        return;
+    }
 
-    const found = allMovies.filter(movie => Object.values(movie).join(' ').toLowerCase().includes(term));
+    const found = allMovies.filter(movie => 
+        movie.title.toLowerCase().includes(term) || 
+        movie.description.toLowerCase().includes(term) || 
+        movie.genre.toLowerCase().includes(term) ||
+        movie.type.toLowerCase().includes(term)
+    );
 
-    searchResultsTitle.innerText = found.length ? `Wyniki: "${target.value}"` : 'Brak wyników';
-    dynamicSearchResults.innerHTML = found.map(createMovieCard).join('') || '<p>Brak wyników.</p>';
+    searchResultsTitle.innerText = found.length ? `Wyniki wyszukiwania dla: "${target.value}"` : 'Brak wyników';
+    dynamicSearchResults.innerHTML = found.map(createMovieCard).join('') || '<p class="no-results">Nie znaleziono filmów spełniających kryteria.</p>';
 });
 </script>
 
