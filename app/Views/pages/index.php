@@ -19,8 +19,13 @@
             </div>
         </div>
     </div>
-    <h2 class="section-title" id="searchResultsTitle" style="display:none; margin-bottom: 20px;">Wyniki wyszukiwania</h2>
-    <div class="movies-grid" id="dynamicSearchResults" style="display:none;"></div>
+    <div id="searchSectionWrapper" style="display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s ease, height 0.4s ease; overflow: hidden;">
+        <div style="min-height: 0;" id="searchSectionContent">
+            <h2 class="section-title" id="searchResultsTitle" style="margin-bottom: 20px;">Wyniki wyszukiwania</h2>
+            <div class="movies-grid" id="dynamicSearchResults"></div>
+            <div style="height: 40px;"></div>
+        </div>
+    </div>
 
     <h2 class="section-title" id="latestMoviesTitle">Najnowsze filmy</h2>
     <?php if (!empty($data['movies'])): ?>
@@ -63,6 +68,8 @@
 const searchInput = document.getElementById('searchInput');
 const searchResultsTitle = document.getElementById('searchResultsTitle');
 const dynamicSearchResults = document.getElementById('dynamicSearchResults');
+const searchSectionWrapper = document.getElementById('searchSectionWrapper');
+const searchSectionContent = document.getElementById('searchSectionContent');
 const latestMoviesTitle = document.getElementById('latestMoviesTitle');
 const urlRoot = '<?php echo URLROOT; ?>';
 
@@ -70,7 +77,7 @@ const allMovies = <?php echo json_encode($data['movies']); ?>;
 
 function createMovieCard(movie, index) {
     const ratingDisplay = movie.rating > 0 ? `${movie.rating}/10` : 'Brak ocen';
-    const delay = index * 0.1; // Staggered animation
+    const delay = index * 0.05; // Slightly faster stagger
     return `
         <a href="${urlRoot}/pages/detail/${movie.id}" class="movie-card-link animate-fade-in" style="animation-delay: ${delay}s">
             <div class="movie-card">
@@ -95,22 +102,26 @@ searchInput.addEventListener('input', ({target}) => {
     if (searchTimeout) clearTimeout(searchTimeout);
 
     if (!term) {
-        latestMoviesTitle.style.display = 'block';
-        searchResultsTitle.style.display = 'none';
-        dynamicSearchResults.style.display = 'none';
-        dynamicSearchResults.innerHTML = '';
+        // Płynne zwijanie
+        const currentHeight = searchSectionWrapper.offsetHeight;
+        searchSectionWrapper.style.height = currentHeight + 'px';
+        
+        // Wymuszamy reflow przed zmianą na 0
+        searchSectionWrapper.offsetHeight;
+
+        searchSectionWrapper.style.gridTemplateRows = '0fr';
+        searchSectionWrapper.style.height = '0px';
+        dynamicSearchResults.classList.add('search-results-transitioning');
+        
+        setTimeout(() => {
+            if (!searchInput.value.trim()) {
+                dynamicSearchResults.innerHTML = '';
+            }
+        }, 400);
         return;
     }
 
-    // Dodajemy klasę przejścia i czyścimy stare wyniki
-    dynamicSearchResults.classList.add('search-results-transitioning');
-    dynamicSearchResults.innerHTML = '';
-
     searchTimeout = setTimeout(() => {
-        latestMoviesTitle.style.display = 'none';
-        searchResultsTitle.style.display = 'block';
-        dynamicSearchResults.style.display = 'grid';
-
         const found = allMovies.filter(movie => 
             movie.title.toLowerCase().includes(term) || 
             movie.description.toLowerCase().includes(term) || 
@@ -118,19 +129,44 @@ searchInput.addEventListener('input', ({target}) => {
             movie.type.toLowerCase().includes(term)
         );
 
+        // Zapamiętujemy poprzednią wysokość
+        const oldHeight = searchSectionWrapper.offsetHeight;
+        
+        // Ustawiamy stałą wysokość, aby umożliwić płynną animację zmniejszania/zwiększania
+        searchSectionWrapper.style.height = oldHeight + 'px';
+
+        // Najpierw przygotowujemy treść, ale trzymamy ją ukrytą (transitioning)
+        dynamicSearchResults.classList.add('search-results-transitioning');
+        
         searchResultsTitle.innerText = found.length ? `Wyniki wyszukiwania dla: "${target.value}"` : 'Brak wyników';
         
-        // Render results
         const content = found.map((movie, index) => createMovieCard(movie, index)).join('') 
             || '<p class="no-results animate-fade-in">Nie znaleziono filmów spełniających kryteria.</p>';
         
         dynamicSearchResults.innerHTML = content;
         
-        // Usuwamy klasę przejścia po renderowaniu
-        requestAnimationFrame(() => {
+        // Płynne przejście do nowej wysokości
+        searchSectionWrapper.style.gridTemplateRows = '1fr';
+        
+        // Używamy setTimeout(0) lub podwójnego requestAnimationFrame, aby przeglądarka 
+        // zarejestrowała nową zawartość przed obliczeniem scrollHeight
+        setTimeout(() => {
+            const newHeight = searchSectionContent.scrollHeight;
+            searchSectionWrapper.style.height = newHeight + 'px';
+            
+            // Po zakończeniu animacji (400ms) usuwamy sztywną wysokość, aby grid przejął kontrolę
+            setTimeout(() => {
+                if (searchInput.value.trim()) {
+                    searchSectionWrapper.style.height = 'auto';
+                }
+            }, 400);
+        }, 0);
+        
+        // Pokazujemy wyniki z animacją
+        setTimeout(() => {
             dynamicSearchResults.classList.remove('search-results-transitioning');
-        });
-    }, 300); // Mały delay dla lepszego efektu przejścia
+        }, 50);
+    }, 300);
 });
 </script>
 
