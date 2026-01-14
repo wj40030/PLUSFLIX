@@ -93,9 +93,15 @@ class Pages extends Controller {
     }
 
     public function random(): void {
+        $movie = null;
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $movie = $this->movieModel->getRandomMovie();
+        }
+
         $data = [
-            'title' => 'Losowy program',
-            'description' => 'To jest strona z losowym programem.'
+            'title' => 'Losuj Produkcję',
+            'description' => 'Nie wiesz co obejrzeć? Wylosuj coś dla siebie!',
+            'movie' => $movie
         ];
         $this->view('pages/random', $data);
     }

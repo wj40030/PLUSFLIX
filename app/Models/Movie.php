@@ -33,4 +33,9 @@ class Movie extends Model {
         $this->db->bind(':genre', $genre);
         return $this->db->resultSet();
     }
+
+    public function getRandomMovie() {
+        $this->db->query('SELECT p.*, g.name as genre FROM productions p LEFT JOIN genres g ON p.genre_id = g.id ORDER BY RAND() LIMIT 1');
+        return $this->db->single();
+    }
 }
