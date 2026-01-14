@@ -25,6 +25,18 @@
 
             <div class="movie-actions">
                 <a href="<?php echo URLROOT; ?>" class="btn-back">Powrot do strony glownej</a>
+                
+                <?php if (isLoggedIn()) : ?>
+                    <?php if (!$data['isInWatchlist']) : ?>
+                        <form action="<?php echo URLROOT; ?>/pages/addToWatchlist/<?php echo $data['movie']->id; ?>" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-primary" style="margin-left: 10px;">+ Dodaj do watchlisty</button>
+                        </form>
+                    <?php else : ?>
+                        <form action="<?php echo URLROOT; ?>/pages/removeFromWatchlist/<?php echo $data['movie']->id; ?>" method="post" style="display: inline;">
+                            <button type="submit" class="btn" style="margin-left: 10px; background: #555;">Usuń z watchlisty</button>
+                        </form>
+                    <?php endif; ?>
+                <?php endif; ?>
             </div>
         </div>
     </div>

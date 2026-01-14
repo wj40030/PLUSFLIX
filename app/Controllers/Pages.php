@@ -151,12 +151,41 @@ class Pages extends Controller {
     public function watchlist(): void {
         requireLogin();
 
+        $movies = $this->movieModel->getWatchlist($_SESSION['user_id']);
+
         $data = [
-            'title' => 'Watchlist',
-            'description' => 'To jest twoja watchlista'
+            'title' => 'Twoja Watchlista',
+            'description' => 'Produkcje, które chcesz obejrzeć.',
+            'movies' => $movies,
+            'css' => 'productions'
         ];
 
         $this->view('pages/watchlist', $data);
+    }
+
+    public function addToWatchlist($id): void {
+        requireLogin();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->movieModel->addToWatchlist($_SESSION['user_id'], $id);
+            header('Location: ' . URLROOT . '/pages/detail/' . $id);
+        } else {
+            header('Location: ' . URLROOT);
+        }
+    }
+
+    public function removeFromWatchlist($id): void {
+        requireLogin();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->movieModel->removeFromWatchlist($_SESSION['user_id'], $id);
+            // Sprawdzamy skąd przyszło żądanie, aby wrócić na tę samą stronę
+            if (isset($_SERVER['HTTP_REFERER'])) {
+                header('Location: ' . $_SERVER['HTTP_REFERER']);
+            } else {
+                header('Location: ' . URLROOT . '/pages/watchlist');
+            }
+        } else {
+            header('Location: ' . URLROOT);
+        }
     }
 
     public function detail($id = null): void {
@@ -194,12 +223,17 @@ class Pages extends Controller {
 
         $currentUserId = isLoggedIn() ? $_SESSION['user_id'] : null;
         $ratings = $this->ratingModel->getRatingsByProductionId($id, $currentUserId);
+        $isInWatchlist = false;
+        if (isLoggedIn()) {
+            $isInWatchlist = $this->movieModel->isInWatchlist($currentUserId, $id);
+        }
 
         $data = [
             'title' => $movie->title,
             'movie' => $movie,
             'css' => 'reviews',
-            'ratings' => $ratings
+            'ratings' => $ratings,
+            'isInWatchlist' => $isInWatchlist
         ];
 
         $this->view('pages/movie', $data);

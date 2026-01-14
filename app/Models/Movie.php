@@ -38,4 +38,37 @@ class Movie extends Model {
         $this->db->query('SELECT p.*, g.name as genre FROM productions p LEFT JOIN genres g ON p.genre_id = g.id ORDER BY RAND() LIMIT 1');
         return $this->db->single();
     }
+
+    public function addToWatchlist($userId, $movieId) {
+        $this->db->query('INSERT IGNORE INTO watchlist (user_id, production_id) VALUES (:user_id, :production_id)');
+        $this->db->bind(':user_id', $userId);
+        $this->db->bind(':production_id', $movieId);
+        return $this->db->execute();
+    }
+
+    public function removeFromWatchlist($userId, $movieId) {
+        $this->db->query('DELETE FROM watchlist WHERE user_id = :user_id AND production_id = :production_id');
+        $this->db->bind(':user_id', $userId);
+        $this->db->bind(':production_id', $movieId);
+        return $this->db->execute();
+    }
+
+    public function getWatchlist($userId) {
+        $this->db->query('SELECT p.*, g.name as genre 
+                          FROM productions p 
+                          JOIN watchlist w ON p.id = w.production_id 
+                          LEFT JOIN genres g ON p.genre_id = g.id 
+                          WHERE w.user_id = :user_id 
+                          ORDER BY w.created_at DESC');
+        $this->db->bind(':user_id', $userId);
+        return $this->db->resultSet();
+    }
+
+    public function isInWatchlist($userId, $movieId) {
+        $this->db->query('SELECT * FROM watchlist WHERE user_id = :user_id AND production_id = :production_id');
+        $this->db->bind(':user_id', $userId);
+        $this->db->bind(':production_id', $movieId);
+        $this->db->single();
+        return $this->db->rowCount() > 0;
+    }
 }

@@ -80,6 +80,16 @@ CREATE TABLE IF NOT EXISTS ratings (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS watchlist (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    production_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (production_id) REFERENCES productions(id) ON DELETE CASCADE,
+    UNIQUE KEY (user_id, production_id)
+);
+
 CREATE TABLE IF NOT EXISTS series (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(50) NOT NULL,
