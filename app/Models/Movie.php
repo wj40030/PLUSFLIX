@@ -18,13 +18,20 @@ class Movie extends Model {
             $this->updateSingleMovieRating($movie->id);
         }
 
-        $this->db->query('SELECT p.*, g.name as genre FROM productions p LEFT JOIN genres g ON p.genre_id = g.id ORDER BY p.created_at DESC');
+        $this->db->query('SELECT p.*, g.name as genre, sp.name as streaming_platforms FROM productions p LEFT JOIN genres g ON p.genre_id = g.id LEFT JOIN streaming_platforms sp ON p.streaming_platforms_id = sp.id ORDER BY p.created_at DESC');
         return $this->db->resultSet();
     }
 
     public function searchMovies($searchTerm) {
-        $this->db->query('SELECT productions.*, genres.name as genre FROM productions LEFT JOIN genres ON productions.genre_id = genres.id WHERE productions.title LIKE :search OR productions.description LIKE :search OR genres.name LIKE :search ORDER BY productions.rating DESC');
+        $this->db->query('SELECT productions.*, genres.name as genre, sp.name as streaming_platforms FROM productions LEFT JOIN genres ON productions.genre_id = genres.id LEFT JOIN streaming_platforms sp ON p.streaming_platforms_id = sp.id WHERE productions.title LIKE :search OR productions.description LIKE :search OR genres.name LIKE :search ORDER BY productions.rating DESC');
         $this->db->bind(':search', '%' . $searchTerm . '%');
+        return $this->db->resultSet();
+    }
+
+    public function filterMovies($genre, $streamingPlatforms) {
+        $this->db->query('SELECT p.*, g.name as genre, sp.name as streaming_platforms FROM productions p LEFT JOIN genres g ON p.genre_id = g.id LEFT JOIN streaming_platforms sp ON p.streaming_platforms_id = sp.id WHERE p.genre_id = :genre AND p.streaming_platforms_id = :streamingPlatforms ORDER BY p.rating DESC');
+        $this->db->bind(':genre', $genre);
+        $this->db->bind(':streamingPlatforms', $streamingPlatforms);
         return $this->db->resultSet();
     }
 
@@ -98,11 +105,12 @@ class Movie extends Model {
         return $this->db->rowCount() > 0;
     }
     public function addMovie($data) {
-        $this->db->query('INSERT INTO productions (title, type, genre_id, description, year, rating) VALUES (:title, :type, :genre_id, :description, :year, :rating)');
+        $this->db->query('INSERT INTO productions (title, type, genre_id, description, streaming_platforms_id, year, rating) VALUES (:title, :type, :genre_id, :description, :streaming_platforms_id, :year, :rating)');
         $this->db->bind(':title', $data['title']);
         $this->db->bind(':type', $data['type']);
         $this->db->bind(':genre_id', $data['genre_id']);
         $this->db->bind(':description', $data['description']);
+        $this->db->bind(':streaming_platforms_id', $data['streaming_platforms_id']);
         $this->db->bind(':year', $data['year']);
         $this->db->bind(':rating', 0);
         return $this->db->execute();
@@ -115,19 +123,21 @@ class Movie extends Model {
     }
 
     public function updateMovie($id, $data) {
-        $this->db->query('UPDATE productions SET title = :title, type = :type, genre_id = :genre_id, description = :description, year = :year WHERE id = :id');
+        $this->db->query('UPDATE productions SET title = :title, type = :type, genre_id = :genre_id, description = :description, streaming_platforms_id = :streaming_platforms_id, year = :year WHERE id = :id');
         $this->db->bind(':id', $id);
         $this->db->bind(':title', $data['title']);
         $this->db->bind(':type', $data['type']);
         $this->db->bind(':genre_id', $data['genre_id']);
         $this->db->bind(':description', $data['description']);
+        $this->db->bind(':streaming_platforms_id', $data['streaming_platforms_id']);
         $this->db->bind(':year', $data['year']);
         return $this->db->execute();
     }
     public function getMoviesWithPagination($limit, $offset) {
-        $this->db->query('SELECT p.*, g.name as genre 
+        $this->db->query('SELECT p.*, g.name as genre, sp.name as streaming_platforms 
                       FROM productions p 
                       LEFT JOIN genres g ON p.genre_id = g.id 
+                      Left JOIN streaming_platforms sp ON p.streaming_platforms_id = sp.id
                       ORDER BY p.created_at DESC 
                       LIMIT :limit OFFSET :offset');
         $this->db->bind(':limit', $limit);

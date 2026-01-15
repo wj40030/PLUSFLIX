@@ -10,6 +10,7 @@ class Pages extends Controller {
     private $ratingModel;
     private $userModel;
     private $genreModel;
+    private $streamingModel;
 
     public function __construct() {
         $this->exampleModel = $this->model('Example');
@@ -17,6 +18,7 @@ class Pages extends Controller {
         $this->ratingModel = $this->model('Rating');
         $this->userModel = $this->model('User');
         $this->genreModel = $this->model('Genre');
+        $this->streamingModel = $this->model('Streaming');
     }
 
     public function index(): void {
@@ -45,7 +47,7 @@ class Pages extends Controller {
         $movies = $this->movieModel->getMoviesWithPagination($limit, $offset);
 
         $ratings = $this->ratingModel->getAllRatings();
-        $platforms = $this->model('Streaming')->all();
+        $platforms = $this->streamingModel->getAllStreamings();
 
         $stats = [
             'users' => 'N/A',
@@ -70,6 +72,7 @@ class Pages extends Controller {
         requireAdmin();
 
         $genres = $this->genreModel->getAllGenres();
+        $streamings = $this->streamingModel->getAllStreamings();
 
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -78,6 +81,7 @@ class Pages extends Controller {
                 'title' => trim($_POST['title']),
                 'type' => trim($_POST['type']),
                 'genre_id' => $_POST['genre_id'],
+                'streaming_platforms_id' => $_POST['streaming_platforms_id'],
                 'description' => trim($_POST['description']),
                 'year' => $_POST['year']
             ];
@@ -90,6 +94,7 @@ class Pages extends Controller {
             $data = [
                 'title' => 'Dodaj Nową Produkcję',
                 'genres' => $genres,
+                'streamings' => $streamings,
                 'css' => 'admin'
             ];
             $this->view('pages/add_production', $data);
@@ -100,6 +105,7 @@ class Pages extends Controller {
         requireAdmin();
 
         $genres = $this->genreModel->getAllGenres();
+        $streamings = $this->streamingModel->getAllStreamings();
 
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -109,6 +115,7 @@ class Pages extends Controller {
                 'title' => trim($_POST['title']),
                 'type' => trim($_POST['type']),
                 'genre_id' => $_POST['genre_id'],
+                'streaming_platforms_id' => $_POST['streaming_platforms_id'],
                 'description' => trim($_POST['description']),
                 'year' => $_POST['year']
             ];
@@ -131,6 +138,7 @@ class Pages extends Controller {
                 'title' => 'Edytuj: ' . $movie->title,
                 'movie' => $movie,
                 'genres' => $genres, // Przekazujemy gatunki do widoku
+                'streamings' => $streamings,
                 'css' => 'admin'
             ];
 
@@ -209,11 +217,20 @@ class Pages extends Controller {
             $this->detail($id);
         } else {
             $movies = $this->movieModel->getAllMovies();
+
+            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                $movies = $this->movieModel->filterMovies($_POST['genre_id'], $_POST['streaming_platforms_id']);
+            }
+
+            $genres = $this->genreModel->getAllGenres();
+            $streamings = $this->streamingModel->getAllStreamings();
             $data = [
                 'title' => 'Produkcje',
                 'description' => 'Wszystkie dostepne filmy',
                 'css' => 'productions',
-                'movies' => $movies
+                'movies' => $movies,
+                'genres' => $genres,
+                'streamings' => $streamings
             ];
             $this->view('pages/productions', $data);
         }

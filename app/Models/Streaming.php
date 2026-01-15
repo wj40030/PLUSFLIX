@@ -17,4 +17,9 @@ class Streaming extends Model {
         $this->db->bind(':offer', $data['offer']);
         return $this->db->execute();
     }
+
+    public function getAllStreamings() {
+        $this->db->query("SELECT * FROM streaming_platforms ORDER BY name ASC");
+        return $this->db->resultSet();
+    }
 }

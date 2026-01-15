@@ -39,6 +39,17 @@
                 </div>
 
                 <div class="form-group">
+                    <label>Platforma Streamingowa</label>
+                    <select name="streaming_platforms_id" class="form-control" required>
+                        <?php foreach($data['streamings'] as $streaming) : ?>
+                            <option value="<?php echo $streaming->id; ?>">
+                                <?php echo $streaming->name; ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="form-group">
                     <label>Opis produkcji</label>
                     <textarea name="description" class="form-control" rows="6" placeholder="Pełny opis..."></textarea>
                 </div>
