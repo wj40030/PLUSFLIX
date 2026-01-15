@@ -8,7 +8,7 @@
 
     <div class="search-container">
         <div class="search-form">
-            <form action="<?php echo URLROOT; ?>/pages/productions" method="GET">
+            <form id="filterForm" action="<?php echo URLROOT; ?>/pages/productions" method="GET">
                 <div class="filter-grid">
                     <div class="form-group">
                         <label>Gatunek</label>
@@ -79,3 +79,44 @@
 </div>
 
 <?php require APPROOT . '/Views/inc/footer.php'; ?>
+
+<script>
+    document.getElementById('filterForm').addEventListener('submit', function(e) {
+        const form = this;
+        const inputs = form.querySelectorAll('select');
+        let hasActiveFilters = false;
+        let filtersChanged = false;
+
+        const urlParams = new URLSearchParams(window.location.search);
+
+        inputs.forEach(input => {
+            const currentValue = input.value;
+            const paramValue = urlParams.get(input.name) || '';
+
+            if (currentValue !== '') {
+                hasActiveFilters = true;
+            }
+
+            if (currentValue !== paramValue) {
+                filtersChanged = true;
+            }
+
+            // Disable empty inputs to prevent them from being added to URL
+            if (currentValue === '') {
+                input.disabled = true;
+            }
+        });
+
+        if (!hasActiveFilters || !filtersChanged) {
+            e.preventDefault();
+            // Re-enable inputs if we prevent submission
+            inputs.forEach(input => input.disabled = false);
+            
+            if (!hasActiveFilters) {
+                alert('Proszę wybrać co najmniej jeden filtr.');
+            } else if (!filtersChanged) {
+                alert('Wybrane filtry są takie same jak obecnie zastosowane.');
+            }
+        }
+    });
+</script>

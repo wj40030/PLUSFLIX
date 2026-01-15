@@ -220,7 +220,7 @@ class Pages extends Controller {
             $genre_id = $_GET['genre_id'] ?? null;
             $streaming_id = $_GET['streaming_platforms_id'] ?? null;
 
-            if ($genre_id || $streaming_id) {
+            if (($genre_id !== null && $genre_id !== '') || ($streaming_id !== null && $streaming_id !== '')) {
                 $movies = $this->movieModel->filterMovies($genre_id, $streaming_id);
             } else {
                 $movies = $this->movieModel->getAllMovies();
