@@ -56,6 +56,22 @@
 .badge-admin { background: var(--primary); color: white; }
 .badge-user { background: #555; color: white; }
 
+.inline-form {
+    display: inline;
+}
+
+.margin-left-10 {
+    margin-left: 10px;
+}
+
+.btn-gray {
+    background: #555;
+}
+
+.badge-pending {
+    background: orange;
+}
+
 .pending-review {
     border: 1px solid orange;
     opacity: 0.9;

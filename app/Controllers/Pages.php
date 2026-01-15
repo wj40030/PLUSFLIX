@@ -31,7 +31,8 @@ class Pages extends Controller {
             'examples' => $examples,
             'movies' => $movies,
             'searchTerm' => '',
-            'searchResults' => []
+            'searchResults' => [],
+            'css' => 'productions'
         ];
 
         $this->view('pages/index', $data);
@@ -252,7 +253,8 @@ class Pages extends Controller {
             'title' => 'Wyszukiwanie filmów',
             'description' => 'Znajdź swój ulubiony film',
             'movies' => $movies,
-            'searchTerm' => $searchTerm
+            'searchTerm' => $searchTerm,
+            'css' => 'productions'
         ];
         $this->view('pages/search', $data);
     }
@@ -265,7 +267,8 @@ class Pages extends Controller {
         $data = [
             'title' => 'Losuj Produkcję',
             'description' => 'Nie wiesz co obejrzeć? Wylosuj coś dla siebie!',
-            'movie' => $movie
+            'movie' => $movie,
+            'css' => 'productions'
         ];
         $this->view('pages/random', $data);
     }

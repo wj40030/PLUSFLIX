@@ -15,7 +15,7 @@
         <button type="submit" class="search-button">Szukaj</button>
     </form>
 
-    <div id="redirectMessage" class="redirect-message" style="display:none; text-align: center; margin: 20px; color: #e50914;">
+    <div id="redirectMessage" class="redirect-message">
         <p>Znaleziono pasujący film. Przekierowywanie...</p>
     </div>
 
@@ -59,9 +59,10 @@ if (movies.length && term) {
         || (movies.length === 1 && movies[0]);
 
     if (target) {
-        document.getElementById('redirectMessage').style.display = 'block';
+        const msg = document.getElementById('redirectMessage');
+        if (msg) msg.classList.add('block');
         const grid = document.querySelector('.movies-grid');
-        if (grid) grid.style.display = 'none';
+        if (grid) grid.classList.add('hidden');
 
         setTimeout(() => location.href = `${urlRoot}/pages/detail/${target.id}`, 100);
     }

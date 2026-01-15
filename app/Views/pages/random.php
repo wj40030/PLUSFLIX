@@ -1,12 +1,12 @@
 <?php require APPROOT . '/Views/inc/header.php'; ?>
 
 <div class="page-container">
-    <div style="text-align: center; margin-bottom: 40px;">
+    <div class="center-content margin-bottom-40">
         <h1 class="page-title"><?php echo $data['title']; ?></h1>
         <p class="page-description"><?php echo $data['description']; ?></p>
         
         <form action="<?php echo URLROOT; ?>/random" method="post">
-            <button type="submit" class="btn-back" style="border: none; cursor: pointer; font-size: 1.2rem;">
+            <button type="submit" class="btn-back btn-random">
                 🎲 Losuj kolejną produkcję
             </button>
         </form>

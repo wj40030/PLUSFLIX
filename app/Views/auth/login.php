@@ -7,7 +7,7 @@
 
         <form action="<?php echo URLROOT; ?>/auth/login" method="post">
             <?php if (!empty($data['error'])): ?>
-                <div class="invalid-feedback" style="margin-bottom:10px;">
+                <div class="invalid-feedback">
                     <?php echo $data['error']; ?>
                 </div>
             <?php endif; ?>

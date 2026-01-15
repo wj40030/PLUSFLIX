@@ -19,11 +19,11 @@
             </div>
         </div>
     </div>
-    <div id="searchSectionWrapper" style="display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s ease, height 0.4s ease; overflow: hidden;">
-        <div style="min-height: 0;" id="searchSectionContent">
-            <h2 class="section-title" id="searchResultsTitle" style="margin-bottom: 20px;">Wyniki wyszukiwania</h2>
+    <div id="searchSectionWrapper">
+        <div id="searchSectionContent">
+            <h2 class="section-title" id="searchResultsTitle">Wyniki wyszukiwania</h2>
             <div class="movies-grid" id="dynamicSearchResults"></div>
-            <div style="height: 40px;"></div>
+            <div class="spacer-40"></div>
         </div>
     </div>
 
@@ -53,7 +53,7 @@
         </div>
     <?php endif; ?>
 
-    <h3 style="margin-top:50px;">Dane z bazy danych:</h3>
+    <h3 class="margin-top-50">Dane z bazy danych:</h3>
     <div class="grid">
         <?php foreach($data['examples'] as $example) : ?>
             <div class="card">

@@ -1,19 +1,19 @@
 <?php require APPROOT . '/Views/inc/header.php'; ?>
 
     <div class="page-container">
-        <div class="admin-section" style="max-width: 700px; margin: 0 auto;">
+        <div class="admin-section max-width-700 margin-auto">
             <div class="section-header">
                 <h2>Dodaj Nową Produkcję</h2>
-                <a href="<?php echo URLROOT; ?>/pages/admin" class="btn" style="background: #444;">Wróć</a>
+                <a href="<?php echo URLROOT; ?>/pages/admin" class="btn btn-edit">Wróć</a>
             </div>
 
-            <form action="<?php echo URLROOT; ?>/pages/addProduction" method="post" style="margin-top: 20px;">
+            <form action="<?php echo URLROOT; ?>/pages/addProduction" method="post" class="margin-top-20">
                 <div class="form-group">
                     <label>Tytuł</label>
                     <input type="text" name="title" class="form-control" required placeholder="Tytuł filmu lub serialu">
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="filter-grid">
                     <div class="form-group">
                         <label>Rok produkcji</label>
                         <input type="number" name="year" class="form-control" required value="<?php echo date('Y'); ?>">
@@ -54,7 +54,7 @@
                     <textarea name="description" class="form-control" rows="6" placeholder="Pełny opis..."></textarea>
                 </div>
 
-                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 15px;">Opublikuj Produkcję</button>
+                <button type="submit" class="btn btn-primary padding-15 width-100">Opublikuj Produkcję</button>
             </form>
         </div>
     </div>

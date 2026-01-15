@@ -4,12 +4,12 @@
     <h1 class="page-title"><?php echo $data['title']; ?></h1>
     <p class="page-description"><?php echo $data['description']; ?></p>
 
-    <h2 class="section-title" id="filters" style="text-align: center;">Filtry</h2>
+    <h2 class="section-title" id="filters">Filtry</h2>
 
     <div class="search-container">
-        <div class="search-form" style="justify-content: center;">
-            <form action="<?php echo URLROOT; ?>/pages/productions" method="GET" style="margin-top: 20px;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div class="search-form">
+            <form action="<?php echo URLROOT; ?>/pages/productions" method="GET">
+                <div class="filter-grid">
                     <div class="form-group">
                         <label>Gatunek</label>
                         <?php
@@ -41,16 +41,16 @@
                         </select>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 10px;">Filtruj</button>
-                <a href="<?php echo URLROOT; ?>/pages/productions" class="btn btn-light" style="padding: 10px; margin-top: 10px; text-align: center; display: block; background: #eee; color: #333; text-decoration: none; border-radius: 5px;">Wyczyść filtry</a>
+                <button type="submit" class="btn btn-primary btn-filter">Filtruj</button>
+                <a href="<?php echo URLROOT; ?>/pages/productions" class="btn btn-light btn-clear-filters">Wyczyść filtry</a>
             </form>
         </div>
     </div>
-    <div id="searchSectionWrapper" style="display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s ease, height 0.4s ease; overflow: hidden;">
-        <div style="min-height: 0;" id="searchSectionContent">
-            <h2 class="section-title" id="searchResultsTitle" style="margin-bottom: 20px;">Wyniki wyszukiwania</h2>
+    <div id="searchSectionWrapper">
+        <div id="searchSectionContent">
+            <h2 class="section-title" id="searchResultsTitle">Wyniki wyszukiwania</h2>
             <div class="movies-grid" id="dynamicSearchResults"></div>
-            <div style="height: 40px;"></div>
+            <div class="spacer-40"></div>
         </div>
     </div>
 

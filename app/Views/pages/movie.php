@@ -31,12 +31,12 @@
                 
                 <?php if (isLoggedIn()) : ?>
                     <?php if (!$data['isInWatchlist']) : ?>
-                        <form action="<?php echo URLROOT; ?>/pages/addToWatchlist/<?php echo $data['movie']->id; ?>" method="post" style="display: inline;">
-                            <button type="submit" class="btn btn-primary" style="margin-left: 10px;">+ Dodaj do watchlisty</button>
+                        <form action="<?php echo URLROOT; ?>/pages/addToWatchlist/<?php echo $data['movie']->id; ?>" method="post" class="inline-form">
+                            <button type="submit" class="btn btn-primary margin-left-10">+ Dodaj do watchlisty</button>
                         </form>
                     <?php else : ?>
-                        <form action="<?php echo URLROOT; ?>/pages/removeFromWatchlist/<?php echo $data['movie']->id; ?>" method="post" style="display: inline;">
-                            <button type="submit" class="btn" style="margin-left: 10px; background: #555;">Usuń z watchlisty</button>
+                        <form action="<?php echo URLROOT; ?>/pages/removeFromWatchlist/<?php echo $data['movie']->id; ?>" method="post" class="inline-form">
+                            <button type="submit" class="btn btn-gray margin-left-10">Usuń z watchlisty</button>
                         </form>
                     <?php endif; ?>
                 <?php endif; ?>
@@ -78,7 +78,7 @@
                         <div class="review-header">
                             <span class="review-author"><?php echo $rating->username; ?></span>
                             <?php if (!$rating->is_approved) : ?>
-                                <span class="badge" style="background: orange;">Oczekuje na zatwierdzenie</span>
+                                <span class="badge badge-pending">Oczekuje na zatwierdzenie</span>
                             <?php endif; ?>
                             <span class="review-rating"><?php echo $rating->rating; ?>/10</span>
                             <span class="review-date"><?php echo date('d.m.Y H:i', strtotime($rating->created_at)); ?></span>

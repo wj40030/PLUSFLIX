@@ -1,7 +1,7 @@
 ﻿<?php require APPROOT . '/Views/inc/header.php'; ?>
 
     <div class="page-container">
-        <div class="admin-section" style="max-width: 800px; margin: 0 auto;">
+        <div class="admin-section max-width-800 margin-auto">
             <h2>Edytuj Produkcję: <?php echo $data['movie']->title; ?></h2>
 
             <form action="<?php echo URLROOT; ?>/pages/editProduction/<?php echo $data['movie']->id; ?>" method="post">
@@ -52,9 +52,9 @@
                     <textarea name="description" rows="5" class="form-control"><?php echo $data['movie']->description; ?></textarea>
                 </div>
 
-                <div style="display: flex; gap: 10px;">
+                <div class="flex-gap-10">
                     <button type="submit" class="btn btn-primary">Zapisz zmiany</button>
-                    <a href="<?php echo URLROOT; ?>/pages/admin" class="btn" style="background: #555;">Anuluj</a>
+                    <a href="<?php echo URLROOT; ?>/pages/admin" class="btn btn-gray">Anuluj</a>
                 </div>
             </form>
         </div>

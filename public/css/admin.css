@@ -141,3 +141,60 @@
     margin-right: 15px;
     cursor: pointer;
 }
+
+.flex-gap-5 {
+    display: flex;
+    gap: 5px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.pagination-admin {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.pagination-admin a {
+    text-decoration: none;
+}
+
+.badge-approved {
+    background: green;
+}
+
+.badge-pending {
+    background: orange;
+}
+
+.max-width-700 {
+    max-width: 700px;
+}
+
+.margin-auto {
+    margin: 0 auto;
+}
+
+.margin-top-20 {
+    margin-top: 20px;
+}
+
+.padding-15 {
+    padding: 15px;
+}
+
+.width-100 {
+    width: 100%;
+}
+
+.max-width-800 {
+    max-width: 800px;
+}
+
+.flex-gap-10 {
+    display: flex;
+    gap: 10px;
+}

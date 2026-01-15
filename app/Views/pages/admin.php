@@ -49,7 +49,7 @@
                                     <td><strong><?php echo $movie->title; ?></strong></td>
                                     <td><?php echo $movie->genre; ?></td>
                                     <td>
-                                        <div style="display: flex; gap: 5px;">
+                                        <div class="flex-gap-5">
                                             <a href="<?php echo URLROOT; ?>/pages/editProduction/<?php echo $movie->id; ?>" class="btn-sm btn-edit">Edytuj</a>
                                             <form action="<?php echo URLROOT; ?>/pages/deleteProduction/<?php echo $movie->id; ?>" method="post" onsubmit="return confirm('Czy na pewno chcesz usunąć tę produkcję?');">
                                                 <button type="submit" class="btn-sm btn-delete">Usuń</button>
@@ -59,18 +59,17 @@
                                 </tr>
                             <?php endforeach; ?>
                         <?php else : ?>
-                            <tr><td colspan="4" style="text-align: center;">Brak produkcji do wyświetlenia.</td></tr>
+                            <tr><td colspan="4" class="text-center">Brak produkcji do wyświetlenia.</td></tr>
                         <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
 
                 <?php if($data['totalPages'] > 1) : ?>
-                    <div class="pagination" style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
+                    <div class="pagination-admin">
                         <?php for($i = 1; $i <= $data['totalPages']; $i++) : ?>
                             <a href="<?php echo URLROOT; ?>/pages/admin/<?php echo $i; ?>#productions"
-                               class="btn-sm <?php echo ($i == $data['currentPage']) ? 'btn-primary' : 'btn-edit'; ?>"
-                               style="text-decoration: none;">
+                               class="btn-sm <?php echo ($i == $data['currentPage']) ? 'btn-primary' : 'btn-edit'; ?>">
                                 <?php echo $i; ?>
                             </a>
                         <?php endfor; ?>
@@ -120,12 +119,12 @@
                                     <td><?php echo $rating->rating; ?>/10</td>
                                     <td><?php echo date('d.m.Y H:i', strtotime($rating->created_at)); ?></td>
                                     <td>
-                                        <span class="badge" style="background: <?php echo $rating->is_approved ? 'green' : 'orange'; ?>;">
+                                        <span class="badge <?php echo $rating->is_approved ? 'badge-approved' : 'badge-pending'; ?>">
                                             <?php echo $rating->is_approved ? 'Zatwierdzony' : 'Oczekuje'; ?>
                                         </span>
                                     </td>
                                     <td>
-                                        <div style="display: flex; gap: 5px;">
+                                        <div class="flex-gap-5">
                                             <?php if(!$rating->is_approved) : ?>
                                                 <form action="<?php echo URLROOT; ?>/pages/approveRating/<?php echo $rating->id; ?>" method="post">
                                                     <button type="submit" class="btn-sm btn-edit">Zatwierdź</button>
@@ -139,7 +138,7 @@
                                 </tr>
                             <?php endforeach; ?>
                         <?php else : ?>
-                            <tr><td colspan="7" style="text-align: center;">Brak komentarzy.</td></tr>
+                            <tr><td colspan="7" class="text-center">Brak komentarzy.</td></tr>
                         <?php endif; ?>
                         </tbody>
                     </table>
