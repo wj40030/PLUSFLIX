@@ -216,10 +216,13 @@ class Pages extends Controller {
         if ($id) {
             $this->detail($id);
         } else {
-            $movies = $this->movieModel->getAllMovies();
+            $genre_id = $_GET['genre_id'] ?? null;
+            $streaming_id = $_GET['streaming_platforms_id'] ?? null;
 
-            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                $movies = $this->movieModel->filterMovies($_POST['genre_id'], $_POST['streaming_platforms_id']);
+            if ($genre_id || $streaming_id) {
+                $movies = $this->movieModel->filterMovies($genre_id, $streaming_id);
+            } else {
+                $movies = $this->movieModel->getAllMovies();
             }
 
             $genres = $this->genreModel->getAllGenres();

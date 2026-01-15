@@ -29,9 +29,32 @@ class Movie extends Model {
     }
 
     public function filterMovies($genre, $streamingPlatforms) {
-        $this->db->query('SELECT p.*, g.name as genre, sp.name as streaming_platforms FROM productions p LEFT JOIN genres g ON p.genre_id = g.id LEFT JOIN streaming_platforms sp ON p.streaming_platforms_id = sp.id WHERE p.genre_id = :genre AND p.streaming_platforms_id = :streamingPlatforms ORDER BY p.rating DESC');
-        $this->db->bind(':genre', $genre);
-        $this->db->bind(':streamingPlatforms', $streamingPlatforms);
+        $sql = 'SELECT p.*, g.name as genre, sp.name as streaming_platforms 
+                FROM productions p 
+                LEFT JOIN genres g ON p.genre_id = g.id 
+                LEFT JOIN streaming_platforms sp ON p.streaming_platforms_id = sp.id 
+                WHERE 1=1';
+        
+        if (!empty($genre)) {
+            $sql .= ' AND p.genre_id = :genre';
+        }
+        
+        if (!empty($streamingPlatforms)) {
+            $sql .= ' AND p.streaming_platforms_id = :streamingPlatforms';
+        }
+        
+        $sql .= ' ORDER BY p.rating DESC';
+        
+        $this->db->query($sql);
+        
+        if (!empty($genre)) {
+            $this->db->bind(':genre', $genre);
+        }
+        
+        if (!empty($streamingPlatforms)) {
+            $this->db->bind(':streamingPlatforms', $streamingPlatforms);
+        }
+        
         return $this->db->resultSet();
     }
 

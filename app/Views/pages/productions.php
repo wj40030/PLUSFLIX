@@ -8,16 +8,15 @@
 
     <div class="search-container">
         <div class="search-form" style="justify-content: center;">
-            <form action="<?php echo URLROOT; ?>/pages/Productions" method="POST" style="margin-top: 20px;">
+            <form action="<?php echo URLROOT; ?>/pages/productions" method="GET" style="margin-top: 20px;">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                     <div class="form-group">
                         <label>Gatunek</label>
                         <?php
-                            $sGenre = '';
-                            if ($_SERVER['REQUEST_METHOD'] === 'POST')
-                                $sGenre = $_POST['genre_id'];
+                            $sGenre = $_GET['genre_id'] ?? '';
                         ?>
-                        <select name="genre_id" class="form-control" required>
+                        <select name="genre_id" class="form-control">
+                            <option value="">Wszystkie gatunki</option>
                             <?php foreach($data['genres'] as $genre) : ?>
                                 <option value="<?php echo $genre->id; ?>"
                                 <?php if ($sGenre == $genre->id) { echo ' selected'; } ?>>
@@ -29,11 +28,10 @@
                     <div class="form-group">
                         <label>Platforma Streamingowa</label>
                         <?php
-                        $sStreaming = '';
-                        if ($_SERVER['REQUEST_METHOD'] === 'POST')
-                            $sStreaming = $_POST['streaming_platforms_id'];
+                        $sStreaming = $_GET['streaming_platforms_id'] ?? '';
                         ?>
-                        <select name="streaming_platforms_id" class="form-control" required>
+                        <select name="streaming_platforms_id" class="form-control">
+                            <option value="">Wszystkie platformy</option>
                             <?php foreach($data['streamings'] as $streaming) : ?>
                                 <option value="<?php echo $streaming->id; ?>"
                                         <?php if ($sStreaming == $streaming->id) { echo ' selected'; } ?>>
@@ -43,7 +41,8 @@
                         </select>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 15px;" onclick="updateURL()">Filtruj</button>
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 10px;">Filtruj</button>
+                <a href="<?php echo URLROOT; ?>/pages/productions" class="btn btn-light" style="width: 100%; padding: 10px; margin-top: 10px; text-align: center; display: block; background: #eee; color: #333; text-decoration: none; border-radius: 5px;">Wyczyść filtry</a>
             </form>
         </div>
     </div>
