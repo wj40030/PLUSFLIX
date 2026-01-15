@@ -8,13 +8,19 @@
 
     <div class="search-container">
         <div class="search-form" style="justify-content: center;">
-            <form action="<?php echo URLROOT; ?>/pages/Productions" method="post" style="margin-top: 20px;">
+            <form action="<?php echo URLROOT; ?>/pages/Productions" method="POST" style="margin-top: 20px;">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                     <div class="form-group">
                         <label>Gatunek</label>
+                        <?php
+                            $sGenre = '';
+                            if ($_SERVER['REQUEST_METHOD'] === 'POST')
+                                $sGenre = $_POST['genre_id'];
+                        ?>
                         <select name="genre_id" class="form-control" required>
                             <?php foreach($data['genres'] as $genre) : ?>
-                                <option value="<?php echo $genre->id; ?>">
+                                <option value="<?php echo $genre->id; ?>"
+                                <?php if ($sGenre == $genre->id) { echo ' selected'; } ?>>
                                     <?php echo $genre->name; ?>
                                 </option>
                             <?php endforeach; ?>
@@ -22,16 +28,22 @@
                     </div>
                     <div class="form-group">
                         <label>Platforma Streamingowa</label>
+                        <?php
+                        $sStreaming = '';
+                        if ($_SERVER['REQUEST_METHOD'] === 'POST')
+                            $sStreaming = $_POST['streaming_platforms_id'];
+                        ?>
                         <select name="streaming_platforms_id" class="form-control" required>
                             <?php foreach($data['streamings'] as $streaming) : ?>
-                                <option value="<?php echo $streaming->id; ?>">
+                                <option value="<?php echo $streaming->id; ?>"
+                                        <?php if ($sStreaming == $streaming->id) { echo ' selected'; } ?>>
                                     <?php echo $streaming->name; ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 15px;">Filtruj</button>
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 15px;" onclick="updateURL()">Filtruj</button>
             </form>
         </div>
     </div>
