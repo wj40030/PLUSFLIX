@@ -42,7 +42,7 @@
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%; padding: 10px;">Filtruj</button>
-                <a href="<?php echo URLROOT; ?>/pages/productions" class="btn btn-light" style="width: 100%; padding: 10px; margin-top: 10px; text-align: center; display: block; background: #eee; color: #333; text-decoration: none; border-radius: 5px;">Wyczyść filtry</a>
+                <a href="<?php echo URLROOT; ?>/pages/productions" class="btn btn-light" style="padding: 10px; margin-top: 10px; text-align: center; display: block; background: #eee; color: #333; text-decoration: none; border-radius: 5px;">Wyczyść filtry</a>
             </form>
         </div>
     </div>
