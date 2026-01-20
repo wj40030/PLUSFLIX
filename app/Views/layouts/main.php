@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo isset($data['title']) ? htmlspecialchars($data['title']) : SITENAME; ?></title>
+    <title><?php echo isset($title) ? htmlspecialchars($title) : SITENAME; ?></title>
     <link rel="stylesheet" href="<?php echo URLROOT; ?>/css/style.css">
     <?php if (isset($pageStyles) && is_array($pageStyles)) : ?>
         <?php foreach ($pageStyles as $style) : ?>
@@ -36,13 +36,7 @@
         </div>
     </header>
     <div class="container">
-        <?php
-        if (isset($viewPath) && is_file($viewPath)) {
-            require $viewPath;
-        } else {
-            echo '<p>Brak widoku do wyświetlenia.</p>';
-        }
-        ?>
+        <?php echo $content ?? ''; ?>
     </div>
     <footer>
         <p>&copy; <?php echo date('Y'); ?> PLUSFLIX. Wszelkie prawa zastrzeżone.</p>

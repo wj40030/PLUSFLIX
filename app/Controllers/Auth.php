@@ -26,7 +26,8 @@ class Auth extends Controller {
             'title' => 'Logowanie',
             'username' => '',
             'password' => '',
-            'error' => ''
+            'error' => '',
+            'errors' => []
         ];
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -34,13 +35,14 @@ class Auth extends Controller {
             $data['password'] = isset($_POST['password']) ? trim($_POST['password']) : '';
 
             if (empty($data['username'])) {
-                $data['error'] = 'podaj nazwe uzytkownika';
-                $this->view('auth/login', $data);
-                return;
+                $data['errors'][] = 'podaj nazwe użytkownika';
             }
 
             if (empty($data['password'])) {
-                $data['error'] = 'podaj haslo';
+                $data['errors'][] = 'podaj hasło';
+            }
+
+            if (!empty($data['errors'])) {
                 $this->view('auth/login', $data);
                 return;
             }
@@ -50,7 +52,7 @@ class Auth extends Controller {
             if ($loggedInUser) {
                 $this->createUserSession($loggedInUser);
             } else {
-                $data['error'] = 'nieprawidlowy login lub haslo';
+                $data['errors'][] = 'nieprawidłowy login lub haslo';
                 $this->view('auth/login', $data);
             }
         } else {

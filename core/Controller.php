@@ -21,10 +21,17 @@ class Controller {
         }
 
         $layoutPath = APPROOT . '/Views/layouts/' . $layout . '.php';
+
+        extract($data);
+
+        ob_start();
+        require $viewPath;
+        $content = ob_get_clean();
+
         if (file_exists($layoutPath)) {
             require $layoutPath;
         } else {
-            require $viewPath;
+            echo $content;
         }
     }
 }
