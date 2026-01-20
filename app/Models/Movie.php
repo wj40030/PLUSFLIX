@@ -23,7 +23,7 @@ class Movie extends Model {
     }
 
     public function searchMovies($searchTerm) {
-        $this->db->query('SELECT productions.*, genres.name as genre, sp.name as streaming_platforms FROM productions LEFT JOIN genres ON productions.genre_id = genres.id LEFT JOIN streaming_platforms sp ON p.streaming_platforms_id = sp.id WHERE productions.title LIKE :search OR productions.description LIKE :search OR genres.name LIKE :search ORDER BY productions.rating DESC');
+        $this->db->query('SELECT p.*, g.name as genre, sp.name as streaming_platforms FROM productions p LEFT JOIN genres g ON p.genre_id = g.id LEFT JOIN streaming_platforms sp ON p.streaming_platforms_id = sp.id WHERE p.title LIKE :search OR p.description LIKE :search OR g.name LIKE :search ORDER BY p.rating DESC');
         $this->db->bind(':search', '%' . $searchTerm . '%');
         return $this->db->resultSet();
     }
@@ -61,7 +61,7 @@ class Movie extends Model {
     public function getMovieById($id) {
         // Przelicz ocenę przed pobraniem szczegółów, aby mieć pewność, że jest aktualna
         $this->updateSingleMovieRating($id);
-        $this->db->query('SELECT p.*, g.name as genre FROM productions p LEFT JOIN genres g ON p.genre_id = g.id WHERE p.id = :id');
+        $this->db->query('SELECT p.*, g.name as genre, sp.name as streaming_platforms FROM productions p LEFT JOIN genres g ON p.genre_id = g.id LEFT JOIN streaming_platforms sp ON p.streaming_platforms_id = sp.id WHERE p.id = :id');
         $this->db->bind(':id', $id);
         return $this->db->single();
     }
@@ -163,8 +163,8 @@ class Movie extends Model {
                       Left JOIN streaming_platforms sp ON p.streaming_platforms_id = sp.id
                       ORDER BY p.created_at DESC 
                       LIMIT :limit OFFSET :offset');
-        $this->db->bind(':limit', $limit);
-        $this->db->bind(':offset', $offset);
+        $this->db->bind(':limit', (int)$limit);
+        $this->db->bind(':offset', (int)$offset);
         return $this->db->resultSet();
     }
 
@@ -174,4 +174,3 @@ class Movie extends Model {
         return $row->total;
     }
 }
-

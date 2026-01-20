@@ -26,8 +26,7 @@ class Auth extends Controller {
             'title' => 'Logowanie',
             'username' => '',
             'password' => '',
-            'error' => '',
-            'css' => 'login'
+            'error' => ''
         ];
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {

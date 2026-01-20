@@ -1,4 +1,4 @@
-<?php require APPROOT . '/Views/inc/header.php'; ?>
+<?php $pageStyles = ['productions']; ?>
 
 <div class="page-container">
     <h1 class="page-title"><?php echo $data['title']; ?></h1>
@@ -8,7 +8,7 @@
         <input
             type="text"
             name="search"
-            placeholder="Wpisz tytul, gatunek lub opis..."
+            placeholder="Wpisz tytuł, gatunek lub opis..."
             value="<?php echo $data['searchTerm']; ?>"
             class="search-input"
         >
@@ -23,7 +23,7 @@
         <h2 class="search-results-title">Wyniki wyszukiwania dla: "<?php echo $data['searchTerm']; ?>"</h2>
 
         <?php if (empty($data['movies'])): ?>
-            <p class="no-results">Nie znaleziono filmow</p>
+            <p class="no-results">Nie znaleziono filmów</p>
         <?php else: ?>
             <div class="movies-grid">
                 <?php foreach($data['movies'] as $movie): ?>
@@ -45,8 +45,6 @@
     <?php endif; ?>
 </div>
 
-<?php require APPROOT . '/Views/inc/footer.php'; ?>
-
 <script>
 const urlRoot = '<?php echo URLROOT; ?>';
 const movies = <?php echo !empty($data['movies']) ? json_encode($data['movies']) : '[]'; ?>;
@@ -64,7 +62,7 @@ if (movies.length && term) {
         const grid = document.querySelector('.movies-grid');
         if (grid) grid.classList.add('hidden');
 
-        setTimeout(() => location.href = `${urlRoot}/pages/detail/${target.id}`, 100);
+        setTimeout(() => location.href = `${urlRoot}/pages/detail/${target.id}`, 600);
     }
 }
 </script>

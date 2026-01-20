@@ -1,15 +1,14 @@
-<?php require APPROOT . '/Views/inc/header.php'; ?>
-    <h1><?php echo $data['title']; ?></h1>
-    <p><?php echo $data['description']; ?></p>
+<?php $pageStyles = ['productions']; ?>
 
-    <h3>Dane z bazy danych:</h3>
-    <div class="grid">
-        <?php foreach($data['series'] as $series) : ?>
-            <div class="card">
-                <h4><?php echo $series->title; ?></h4>
-                <p><?php echo $series->description; ?></p>
-            </div>
-        <?php endforeach; ?>
-    </div>
+<h1><?php echo $data['title']; ?></h1>
+<p><?php echo $data['description']; ?></p>
 
-<?php require APPROOT . '/Views/inc/footer.php'; ?>
+<h3>Dane z bazy danych:</h3>
+<div class="grid">
+    <?php foreach($data['series'] as $series) : ?>
+        <div class="card">
+            <h4><?php echo $series->title; ?></h4>
+            <p><?php echo $series->description; ?></p>
+        </div>
+    <?php endforeach; ?>
+</div>

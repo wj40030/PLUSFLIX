@@ -1,4 +1,4 @@
-<?php require APPROOT . '/Views/inc/header.php'; ?>
+<?php $pageStyles = ['productions']; ?>
 
 <div class="page-container">
     <div class="center-content margin-bottom-40">
@@ -37,5 +37,3 @@
         </div>
     <?php endif; ?>
 </div>
-
-<?php require APPROOT . '/Views/inc/footer.php'; ?>

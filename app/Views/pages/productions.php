@@ -1,4 +1,4 @@
-<?php require APPROOT . '/Views/inc/header.php'; ?>
+<?php $pageStyles = ['productions']; ?>
 
 <div class="page-container">
     <h1 class="page-title"><?php echo $data['title']; ?></h1>
@@ -56,7 +56,7 @@
 
 
     <?php if (empty($data['movies'])): ?>
-        <p class="no-results">Brak filmow w bazie danych</p>
+        <p class="no-results">Brak filmów w bazie danych</p>
     <?php else: ?>
         <div class="movies-grid">
             <?php foreach($data['movies'] as $movie): ?>
@@ -77,8 +77,6 @@
         </div>
     <?php endif; ?>
 </div>
-
-<?php require APPROOT . '/Views/inc/footer.php'; ?>
 
 <script>
     document.getElementById('filterForm').addEventListener('submit', function(e) {

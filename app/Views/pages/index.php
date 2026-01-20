@@ -1,8 +1,8 @@
-<?php require APPROOT . '/Views/inc/header.php'; ?>
+<?php $pageStyles = ['productions']; ?>
 
 <div class="page-container">
-    <h1 class="page-title"><?php echo $data['title']; ?></h1>
-    <p class="page-description"><?php echo $data['description']; ?></p>
+    <h1 class="page-title"><?php echo isset($data['title']) ? $data['title'] : ''; ?></h1>
+    <p class="page-description"><?php echo isset($data['description']) ? $data['description'] : ''; ?></p>
 
     <div class="search-container">
         <div class="search-form">
@@ -11,9 +11,10 @@
                     type="text"
                     name="search"
                     id="searchInput"
-                    placeholder="Wpisz tytul filmu..."
+                    placeholder="Wpisz tytuł filmu..."
                     class="search-input"
                     autocomplete="off"
+                    aria-label="Wpisz tytuł filmu"
                 >
                 <div id="suggestions" class="suggestions"></div>
             </div>
@@ -36,7 +37,7 @@
                 if($count >= 6) break;
                 $count++;
             ?>
-                <a href="<?php echo URLROOT; ?>/pages/detail/<?php echo $movie->id; ?>" class="movie-card-link">
+                <a href="<?php echo URLROOT; ?>/pages/detail/<?php echo isset($movie->id) ? (int)$movie->id : 0; ?>" class="movie-card-link">
                     <div class="movie-card">
                         <h3 class="movie-title"><?php echo $movie->title; ?></h3>
                         <p class="movie-description"><?php echo $movie->description; ?></p>
@@ -44,7 +45,7 @@
                             <p><strong>Rok:</strong> <?php echo $movie->year; ?></p>
                             <p><strong>Gatunek:</strong> <?php echo $movie->genre; ?></p>
                             <p><strong>Typ:</strong> <?php echo $movie->type; ?></p>
-                            <p><strong>Dostępność:</strong> <?php echo $movie->streaming_platforms; ?></p>
+                            <p><strong>Dostępność:</strong> <?php echo isset($movie->streaming_platforms) ? $movie->streaming_platforms : 'Brak danych'; ?></p>
                             <p><strong>Ocena:</strong> <?php echo ($movie->rating > 0) ? $movie->rating . '/10' : 'Brak ocen'; ?></p>
                         </div>
                     </div>
@@ -57,9 +58,9 @@
     <div class="grid">
         <?php foreach($data['examples'] as $example) : ?>
             <div class="card">
-                <h4><?php echo $example->title; ?></h4>
-                <p><?php echo $example->description; ?></p>
-                <small>Dodano: <?php echo $example->created_at; ?></small>
+                <h4><?php echo isset($example->title) ? $example->title : ''; ?></h4>
+                <p><?php echo isset($example->description) ? $example->description : ''; ?></p>
+                <small>Dodano: <?php echo isset($example->created_at) ? $example->created_at : ''; ?></small>
             </div>
         <?php endforeach; ?>
     </div>
@@ -124,9 +125,9 @@ searchInput.addEventListener('input', ({target}) => {
     }
 
     searchTimeout = setTimeout(() => {
-        const found = allMovies.filter(movie => 
-            movie.title.toLowerCase().includes(term) || 
-            movie.description.toLowerCase().includes(term) || 
+        const found = allMovies.filter(movie =>
+            movie.title.toLowerCase().includes(term) ||
+            movie.description.toLowerCase().includes(term) ||
             movie.genre.toLowerCase().includes(term) ||
             movie.type.toLowerCase().includes(term)
         );
@@ -171,5 +172,3 @@ searchInput.addEventListener('input', ({target}) => {
     }, 300);
 });
 </script>
-
-<?php require APPROOT . '/Views/inc/footer.php'; ?>

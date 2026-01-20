@@ -3,16 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo isset($data['title']) ? $data['title'] : SITENAME; ?></title>
+    <title><?php echo isset($data['title']) ? htmlspecialchars($data['title']) : SITENAME; ?></title>
     <link rel="stylesheet" href="<?php echo URLROOT; ?>/css/style.css">
-    <?php if (isset($data['css'])) : ?>
-        <?php if (is_array($data['css'])) : ?>
-            <?php foreach ($data['css'] as $style) : ?>
-                <link rel="stylesheet" href="<?php echo URLROOT; ?>/css/<?php echo htmlspecialchars($style); ?>.css">
-            <?php endforeach; ?>
-        <?php else : ?>
-            <link rel="stylesheet" href="<?php echo URLROOT; ?>/css/<?php echo htmlspecialchars($data['css']); ?>.css">
-        <?php endif; ?>
+    <?php if (isset($pageStyles) && is_array($pageStyles)) : ?>
+        <?php foreach ($pageStyles as $style) : ?>
+            <link rel="stylesheet" href="<?php echo URLROOT; ?>/css/<?php echo htmlspecialchars($style); ?>.css">
+        <?php endforeach; ?>
     <?php endif; ?>
 </head>
 <body>
@@ -35,8 +31,21 @@
                 <span class="welcome-msg">Witaj, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong></span>
                 <a href="<?php echo URLROOT; ?>/auth/logout" class="btn-logout">Wyloguj</a>
             <?php else : ?>
-                <a href="<?php echo URLROOT; ?>/auth/login" class="btn-login">Zaloguj sie</a>
+                <a href="<?php echo URLROOT; ?>/auth/login" class="btn-login">Zaloguj się</a>
             <?php endif; ?>
         </div>
     </header>
     <div class="container">
+        <?php
+        if (isset($viewPath) && is_file($viewPath)) {
+            require $viewPath;
+        } else {
+            echo '<p>Brak widoku do wyświetlenia.</p>';
+        }
+        ?>
+    </div>
+    <footer>
+        <p>&copy; <?php echo date('Y'); ?> PLUSFLIX. Wszelkie prawa zastrzeżone.</p>
+    </footer>
+</body>
+</html>

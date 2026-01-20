@@ -15,9 +15,13 @@ function requireLogin() {
 }
 
 function requireAdmin() {
+    if (!isLoggedIn()) {
+        header('Location: ' . URLROOT . '/auth/login');
+        exit;
+    }
+
     if (!isAdmin()) {
         header('Location: ' . URLROOT);
         exit;
     }
 }
-

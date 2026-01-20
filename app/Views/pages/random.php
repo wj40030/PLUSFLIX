@@ -1,4 +1,4 @@
-<?php require APPROOT . '/Views/inc/header.php'; ?>
+<?php $pageStyles = ['productions']; ?>
 
 <div class="page-container">
     <div class="center-content margin-bottom-40">
@@ -16,7 +16,7 @@
         <div class="movie-details-container">
             <div class="movie-poster">
                 <div class="poster-placeholder">
-                    <span>Brak zdjecia</span>
+                    <span>Brak zdjęcia</span>
                 </div>
             </div>
 
@@ -42,5 +42,3 @@
         </div>
     <?php endif; ?>
 </div>
-
-<?php require APPROOT . '/Views/inc/footer.php'; ?>

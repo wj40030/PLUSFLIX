@@ -1,9 +1,9 @@
-<?php require APPROOT . '/Views/inc/header.php'; ?>
+<?php $pageStyles = ['login']; ?>
 
 <div class="login-container">
     <div class="login-box">
         <h2>Logowanie do PLUSFLIX</h2>
-        <p>Zaloguj sie aby uzyskac dostep do aplikacji</p>
+        <p>Zaloguj się aby uzyskać dostep do aplikacji</p>
 
         <form action="<?php echo URLROOT; ?>/auth/login" method="post">
             <?php if (!empty($data['error'])): ?>
@@ -13,7 +13,7 @@
             <?php endif; ?>
 
             <div class="form-group">
-                <label for="username">Nazwa uzytkownika:</label>
+                <label for="username">Nazwa użytkownika:</label>
                 <input
                     type="text"
                     name="username"
@@ -31,17 +31,15 @@
             </div>
 
             <div class="form-group">
-                <button type="submit" class="btn btn-primary">Zaloguj sie</button>
+                <button type="submit" class="btn btn-primary">Zaloguj się</button>
             </div>
         </form>
 
         <div class="login-info">
             <h4>Dane testowe:</h4>
-            <p><strong>Uzytkownik:</strong> user / user</p>
+            <p><strong>Użytkownik:</strong> user / user</p>
             <p><strong>Administrator:</strong> admin / tajne</p>
         </div>
 
     </div>
 </div>
-
-<?php require APPROOT . '/Views/inc/footer.php'; ?>
