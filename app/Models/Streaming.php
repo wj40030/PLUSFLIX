@@ -10,16 +10,37 @@ class Streaming extends Model {
         $this->table = 'streaming_platforms';
     }
 
-    public function updatePlatform($id, $data) {
-        $this->db->query('UPDATE streaming_platforms SET price = :price, offer = :offer WHERE id = :id');
+    public function getAllStreamings() {
+        $this->db->query("SELECT * FROM streaming_platforms ORDER BY name ASC");
+        return $this->db->resultSet();
+    }
+
+    public function getStreamingById($id) {
+        $this->db->query("SELECT * FROM streaming_platforms WHERE id = :id");
         $this->db->bind(':id', $id);
+        return $this->db->single();
+    }
+
+    public function addPlatform($data) {
+        $this->db->query('INSERT INTO streaming_platforms (name, price, offer) VALUES (:name, :price, :offer)');
+        $this->db->bind(':name', $data['name']);
         $this->db->bind(':price', $data['price']);
         $this->db->bind(':offer', $data['offer']);
         return $this->db->execute();
     }
 
-    public function getAllStreamings() {
-        $this->db->query("SELECT * FROM streaming_platforms ORDER BY name ASC");
-        return $this->db->resultSet();
+    public function updatePlatform($id, $data) {
+        $this->db->query('UPDATE streaming_platforms SET name = :name, price = :price, offer = :offer WHERE id = :id');
+        $this->db->bind(':id', $id);
+        $this->db->bind(':name', $data['name']);
+        $this->db->bind(':price', $data['price']);
+        $this->db->bind(':offer', $data['offer']);
+        return $this->db->execute();
+    }
+
+    public function deletePlatform($id) {
+        $this->db->query('DELETE FROM streaming_platforms WHERE id = :id');
+        $this->db->bind(':id', $id);
+        return $this->db->execute();
     }
 }

@@ -8,19 +8,13 @@ class Pages extends Controller {
     private const allowedPageItems = 10;
 
     public function index(): void {
-        $exampleModel = $this->model('Example');
         $movieModel = $this->model('Movie');
-        
-        $examples = $exampleModel->getTestData();
         $movies = $movieModel->getAllMovies();
 
         $data = [
-            'title' => 'Witaj',
-            'description' => 'To jest strona glowna aplikacji PLUSFLIX.',
-            'examples' => $examples,
-            'movies' => $movies,
-            'searchTerm' => '',
-            'searchResults' => []
+            'title' => 'Witaj w PLUSFLIX',
+            'description' => 'Twoje centrum filmów i seriali.',
+            'movies' => $movies
         ];
 
         $this->view('pages/index', $data);
@@ -32,6 +26,7 @@ class Pages extends Controller {
         $movieModel = $this->model('Movie');
         $ratingModel = $this->model('Rating');
         $streamingModel = $this->model('Streaming');
+        $userModel = $this->model('User');
 
         $limit = self::allowedPageItems;
         $offset = ($page - 1) * $limit;
@@ -39,27 +34,74 @@ class Pages extends Controller {
         $totalMovies = $movieModel->getTotalMoviesCount();
         $movies = $movieModel->getMoviesWithPagination($limit, $offset);
 
-        $ratings = $ratingModel->getAllRatings();
-        $platforms = $streamingModel->getAllStreamings();
-
-        $stats = [
-            'users' => 'N/A',
-            'movies' => $totalMovies,
-            'ratings' => count($ratings)
-        ];
-
         $data = [
             'movies' => $movies,
-            'ratings' => $ratings,
-            'platforms' => $platforms,
+            'ratings' => $ratingModel->getAllRatings(),
+            'platforms' => $streamingModel->getAllStreamings(),
+            'users' => $userModel->getAllUsers(),
             'currentPage' => (int)$page,
             'totalPages' => ceil($totalMovies / $limit),
-            'stats' => $stats,
-            'title' => 'Panel administracyjny',
-            'description' => 'Panel administracyjny - zarządzanie produkcjami i ocenami.'
+            'stats' => [
+                'users' => count($userModel->getAllUsers()),
+                'movies' => $totalMovies,
+                'ratings' => count($ratingModel->getAllRatings())
+            ],
+            'title' => 'Panel administracyjny'
         ];
 
         $this->view('pages/admin', $data);
+    }
+
+    public function addPlatform(): void {
+        requireAdmin();
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $streamingModel = $this->model('Streaming');
+            $data = [
+                'name' => trim($_POST['name']),
+                'price' => $_POST['price'],
+                'offer' => trim($_POST['offer'])
+            ];
+            if ($streamingModel->addPlatform($data)) {
+                header('Location: ' . URLROOT . '/pages/admin#streaming');
+            }
+        } else {
+            $this->view('pages/add_platform', ['title' => 'Dodaj Platformę']);
+        }
+    }
+
+    public function editPlatform($id): void {
+        requireAdmin();
+        $streamingModel = $this->model('Streaming');
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $data = [
+                'name' => trim($_POST['name']),
+                'price' => $_POST['price'],
+                'offer' => trim($_POST['offer'])
+            ];
+            if ($streamingModel->updatePlatform($id, $data)) {
+                header('Location: ' . URLROOT . '/pages/admin#streaming');
+            }
+        } else {
+            $platform = $streamingModel->getStreamingById($id);
+            $this->view('pages/edit_platform', ['platform' => $platform, 'title' => 'Edytuj Platformę']);
+        }
+    }
+
+    public function deletePlatform($id): void {
+        requireAdmin();
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $this->model('Streaming')->deletePlatform($id);
+            header('Location: ' . URLROOT . '/pages/admin#streaming');
+        }
+    }
+    public function deleteUser($id): void {
+        requireAdmin();
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            if ($id != $_SESSION['user_id']) {
+                $this->model('User')->deleteUser($id);
+            }
+            header('Location: ' . URLROOT . '/pages/admin#users');
+        }
     }
 
     public function addProduction(): void {

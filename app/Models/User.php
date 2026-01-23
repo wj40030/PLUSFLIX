@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Core\Model;
@@ -9,6 +8,17 @@ class User extends Model {
     public function __construct(Database $db) {
         parent::__construct($db);
         $this->table = 'users';
+    }
+
+    public function getAllUsers() {
+        $this->db->query("SELECT id, username, role, created_at FROM users ORDER BY created_at DESC");
+        return $this->db->resultSet();
+    }
+
+    public function deleteUser($id) {
+        $this->db->query('DELETE FROM users WHERE id = :id');
+        $this->db->bind(':id', $id);
+        return $this->db->execute();
     }
 
     public function findUserByUsername($username) {

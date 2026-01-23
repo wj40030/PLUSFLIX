@@ -53,17 +53,6 @@
             <?php endforeach; ?>
         </div>
     <?php endif; ?>
-
-    <h3 class="margin-top-50">Dane z bazy danych:</h3>
-    <div class="grid">
-        <?php foreach($data['examples'] as $example) : ?>
-            <div class="card">
-                <h4><?php echo isset($example->title) ? $example->title : ''; ?></h4>
-                <p><?php echo isset($example->description) ? $example->description : ''; ?></p>
-                <small>Dodano: <?php echo isset($example->created_at) ? $example->created_at : ''; ?></small>
-            </div>
-        <?php endforeach; ?>
-    </div>
 </div>
 
 <script>

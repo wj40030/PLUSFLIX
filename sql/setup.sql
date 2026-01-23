@@ -1,19 +1,6 @@
 CREATE DATABASE IF NOT EXISTS plusflix;
 USE plusflix;
 
--- Tabela examples
-CREATE TABLE IF NOT EXISTS examples (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Przykładowe dane
-INSERT INTO examples (title, description) VALUES 
-('Pierwszy przyklad', 'To jest przykladowy opis z bazy danych.'),
-('Drugi przyklad', 'Kolejny opis do celow testowych.');
-
 -- Tabela uzytkownikow
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
