@@ -54,7 +54,9 @@ class Pages extends Controller {
             'platforms' => $platforms,
             'currentPage' => (int)$page,
             'totalPages' => ceil($totalMovies / $limit),
-            'stats' => $stats
+            'stats' => $stats,
+            'title' => 'Panel administracyjny',
+            'description' => 'Panel administracyjny - zarządzanie produkcjami i ocenami.'
         ];
 
         $this->view('pages/admin', $data);
@@ -89,6 +91,7 @@ class Pages extends Controller {
         } else {
             $data = [
                 'title' => 'Dodaj Nową Produkcję',
+                'description' => 'Formularz dodawania nowej produkcji.',
                 'genres' => $genres,
                 'streamings' => $streamings
             ];
@@ -135,6 +138,7 @@ class Pages extends Controller {
 
             $data = [
                 'title' => 'Edytuj: ' . $movie->title,
+                'description' => isset($movie->description) ? $movie->description : '',
                 'movie' => $movie,
                 'genres' => $genres,
                 'streamings' => $streamings
@@ -213,6 +217,7 @@ class Pages extends Controller {
 
         $data = [
             'title' => $movie->title,
+            'description' => isset($movie->description) ? $movie->description : '',
             'movie' => $movie,
             'ratings' => $ratingModel->getRatingsByProductionId($id, isLoggedIn() ? $_SESSION['user_id'] : null),
             'isInWatchlist' => isLoggedIn() ? $movieModel->isInWatchlist($_SESSION['user_id'], $id) : false

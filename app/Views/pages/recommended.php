@@ -1,14 +1,18 @@
 <?php $pageStyles = ['productions']; ?>
 
-<h1><?php echo $data['title']; ?></h1>
-<p><?php echo $data['description']; ?></p>
+<h1><?php echo isset($title) ? htmlspecialchars($title) : ''; ?></h1>
+<p><?php echo isset($description) ? htmlspecialchars($description) : ''; ?></p>
 
 <h3>Dane z bazy danych:</h3>
 <div class="grid">
-    <?php foreach($data['series'] as $series) : ?>
-        <div class="card">
-            <h4><?php echo $series->title; ?></h4>
-            <p><?php echo $series->description; ?></p>
-        </div>
-    <?php endforeach; ?>
+    <?php if (!empty($series)) : ?>
+        <?php foreach($series as $item) : ?>
+            <div class="card">
+                <h4><?php echo isset($item->title) ? htmlspecialchars($item->title) : ''; ?></h4>
+                <p><?php echo isset($item->description) ? htmlspecialchars($item->description) : ''; ?></p>
+            </div>
+        <?php endforeach; ?>
+    <?php else : ?>
+        <p>Brak danych.</p>
+    <?php endif; ?>
 </div>
