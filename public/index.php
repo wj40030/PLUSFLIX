@@ -2,6 +2,7 @@
 session_start();
 
 require_once '../config/config.php';
+require_once '../app/helpers/auth_helper.php';
 
 spl_autoload_register(function($className) {
     $className = str_replace('\\', '/', $className);

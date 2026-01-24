@@ -13,11 +13,25 @@ class Controller {
         return new $fullModelName(new Database());
     }
 
-    public function view(string $view, array $data = []): void {
-        if (file_exists(APPROOT . '/Views/' . $view . '.php')) {
-            require_once APPROOT . '/Views/' . $view . '.php';
+    public function view(string $view, array $data = [], string $layout = 'main'): void {
+        $viewPath = APPROOT . '/Views/' . $view . '.php';
+
+        if (!file_exists($viewPath)) {
+            die('Widok nie istnieje: ' . $view);
+        }
+
+        $layoutPath = APPROOT . '/Views/layouts/' . $layout . '.php';
+
+        extract($data);
+
+        ob_start();
+        require $viewPath;
+        $content = ob_get_clean();
+
+        if (file_exists($layoutPath)) {
+            require $layoutPath;
         } else {
-            die('Widok nie istnieje');
+            echo $content;
         }
     }
 }

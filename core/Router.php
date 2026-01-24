@@ -10,12 +10,17 @@ class Router {
     public function __construct() {
         $url = $this->getUrl();
 
-        if ($url && file_exists('../app/Controllers/' . ucwords($url[0]) . '.php')) {
+        if ($url && strtolower($url[0]) === 'detail') {
+            $this->currentController = 'App\\Controllers\\Pages';
+            $this->currentMethod = 'detail';
+            unset($url[0]);
+        } elseif ($url && file_exists('../app/Controllers/' . ucwords($url[0]) . '.php')) {
             $this->currentController = 'App\\Controllers\\' . ucwords($url[0]);
             unset($url[0]);
         } else {
             $pagesController = 'App\\Controllers\\Pages';
             if ($url && method_exists($pagesController, $url[0])) {
+                $this->currentController = 'App\\Controllers\\Pages';
                 $this->currentMethod = $url[0];
                 unset($url[0]);
             }
@@ -32,6 +37,9 @@ class Router {
                 $this->currentMethod = $url[1];
                 unset($url[1]);
             }
+        } else if (isset($url[0]) && method_exists($this->currentController, $url[0])) {
+            $this->currentMethod = $url[0];
+            unset($url[0]);
         }
 
         $this->params = $url ? array_values($url) : [];
