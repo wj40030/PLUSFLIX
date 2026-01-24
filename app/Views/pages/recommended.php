@@ -1,18 +1,27 @@
 <?php $pageStyles = ['productions']; ?>
 
-<h1><?php echo isset($title) ? htmlspecialchars($title) : ''; ?></h1>
-<p><?php echo isset($description) ? htmlspecialchars($description) : ''; ?></p>
+<div class="page-container">
+    <h1 class="page-title"><?php echo isset($title) ? htmlspecialchars($title) : ''; ?></h1>
+    <p class="page-description"><?php echo isset($description) ? htmlspecialchars($description) : ''; ?></p>
 
-<h3>Dane z bazy danych:</h3>
-<div class="grid">
-    <?php if (!empty($series)) : ?>
-        <?php foreach($series as $item) : ?>
-            <div class="card">
-                <h4><?php echo isset($item->title) ? htmlspecialchars($item->title) : ''; ?></h4>
-                <p><?php echo isset($item->description) ? htmlspecialchars($item->description) : ''; ?></p>
-            </div>
-        <?php endforeach; ?>
-    <?php else : ?>
-        <p>Brak danych.</p>
+    <?php if (empty($series)): ?>
+        <p class="no-results">Brak filmów w bazie danych</p>
+    <?php else: ?>
+        <div class="movies-grid">
+            <?php foreach($series as $item): ?>
+                <a href="<?php echo URLROOT; ?>/pages/detail/<?php echo $item->id; ?>" class="movie-card-link">
+                    <div class="movie-card">
+                        <h3 class="movie-title"><?php echo $item->title; ?></h3>
+                        <p class="movie-description"><?php echo $item->description; ?></p>
+                        <div class="movie-details">
+                            <p><strong>Rok:</strong> <?php echo $item->year; ?></p>
+                            <p><strong>Gatunek:</strong> <?php echo $item->genre; ?></p>
+                            <p><strong>Typ:</strong> <?php echo $item->type; ?></p>
+                            <p><strong>Dostępność:</strong> <?php echo $item->streaming_platforms; ?></p>
+                        </div>
+                    </div>
+                </a>
+            <?php endforeach; ?>
+        </div>
     <?php endif; ?>
 </div>

@@ -6,5 +6,5 @@ define('DB_PASS', '');
 define('DB_NAME', 'PLUSFLIX');
 
 define('APPROOT', dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'app');
-define('URLROOT', 'http://localhost/PLUSFLIX/public');
+define('URLROOT', 'http://localhost');
 define('SITENAME', 'PLUSFLIX');

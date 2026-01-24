@@ -61,24 +61,25 @@ CREATE TABLE IF NOT EXISTS productions (
     streaming_platforms_id INT,
     year INT,
     rating DECIMAL(3,1),
+    watchlist_count INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (genre_id) REFERENCES genres(id),
     FOREIGN KEY (streaming_platforms_id) REFERENCES streaming_platforms(id)
     );
 
-INSERT INTO productions (title, type, genre_id, description, streaming_platforms_id, year, rating) VALUES
-('Breaking Bad', 'Serial', 1, 'Nauczyciel chemii zmienia sie w producenta metamfetaminy.', 1, 2008, 9.5),
-('Stranger Things', 'Serial', 5, 'Grupa dzieci odkrywa tajemnice i nadprzyrodzone wydarzenia w swoim miasteczku.', 1, 2016, 8.7),
-('The Shawshank Redemption', 'Film', 1, 'Dwaj wiezniowie zawiazuja wiez przez lata, znajdujac pocieche i ostateczne odkupienie.', 2, 1994, 9.3),
-('Inception', 'Film', 2, 'Zlodziej kradnacy sekrety poprzez technologie dzielenia sie snami.', 2, 2010, 8.8),
-('The Office', 'Serial', 6, 'Mockument o codziennym zyciu pracownikow biurowych.', 1, 2005, 8.9),
-('Pulp Fiction', 'Film', 3, 'Kilka historii przestepcow przeplataja sie w Los Angeles.', 1, 1994, 8.9),
-('The Witcher', 'Serial', 7, 'Lowca potworow walczy z plaga w swiecie fantasy.', 2, 2019, 8.8),
-('The Dark Knight', 'Film', 4, 'Batman walczy z anarchistycznym przestepca - Jokerem.', 1, 2008, 9.0),
-('Game of Thrones', 'Serial', 7, 'Wielkie rody walcza o Zelazny Tron w krainie Westeros.', 2, 2011, 9.2),
-('Interstellar', 'Film', 2, 'Podroz przez przestrzen kosmiczna w poszukiwaniu nowego domu dla ludzkosci.', 2, 2014, 8.6),
-('Friends', 'Serial', 6, 'Grupa przyjaciol w Nowym Jorku przez wzloty i upadki zycia.', 2, 1994, 8.8),
-('The Matrix', 'Film', 2, 'Haker odkrywa prawde o rzeczywistosci i swojej roli w wojnie przeciwko kontrolerom.', 1, 1999, 8.7);
+INSERT INTO productions (title, type, genre_id, description, streaming_platforms_id, year, rating, watchlist_count) VALUES
+('Breaking Bad', 'Serial', 1, 'Nauczyciel chemii zmienia sie w producenta metamfetaminy.', 1, 2008, 9.5, 100),
+('Stranger Things', 'Serial', 5, 'Grupa dzieci odkrywa tajemnice i nadprzyrodzone wydarzenia w swoim miasteczku.', 1, 2016, 8.7, 25),
+('The Shawshank Redemption', 'Film', 1, 'Dwaj wiezniowie zawiazuja wiez przez lata, znajdujac pocieche i ostateczne odkupienie.', 2, 1994, 9.3, 45),
+('Inception', 'Film', 2, 'Zlodziej kradnacy sekrety poprzez technologie dzielenia sie snami.', 2, 2010, 8.8, 65),
+('The Office', 'Serial', 6, 'Mockument o codziennym zyciu pracownikow biurowych.', 1, 2005, 8.9, 120),
+('Pulp Fiction', 'Film', 3, 'Kilka historii przestepcow przeplataja sie w Los Angeles.', 1, 1994, 8.9, 15),
+('The Witcher', 'Serial', 7, 'Lowca potworow walczy z plaga w swiecie fantasy.', 2, 2019, 8.8, 50),
+('The Dark Knight', 'Film', 4, 'Batman walczy z anarchistycznym przestepca - Jokerem.', 1, 2008, 9.0, 34),
+('Game of Thrones', 'Serial', 7, 'Wielkie rody walcza o Zelazny Tron w krainie Westeros.', 2, 2011, 9.2, 60),
+('Interstellar', 'Film', 2, 'Podroz przez przestrzen kosmiczna w poszukiwaniu nowego domu dla ludzkosci.', 2, 2014, 8.6, 70),
+('Friends', 'Serial', 6, 'Grupa przyjaciol w Nowym Jorku przez wzloty i upadki zycia.', 2, 1994, 8.8, 50),
+('The Matrix', 'Film', 2, 'Haker odkrywa prawde o rzeczywistosci i swojej roli w wojnie przeciwko kontrolerom.', 1, 1999, 8.7, 50);
 
 CREATE TABLE IF NOT EXISTS watchlist (
                                          id INT AUTO_INCREMENT PRIMARY KEY,

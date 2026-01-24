@@ -96,17 +96,37 @@ class Movie extends Model {
     }
 
     public function addToWatchlist($userId, $movieId) {
+        // dodanie do watchlisty
         $this->db->query('INSERT IGNORE INTO watchlist (user_id, production_id) VALUES (:user_id, :production_id)');
         $this->db->bind(':user_id', $userId);
         $this->db->bind(':production_id', $movieId);
-        return $this->db->execute();
+        $added = $this->db->execute();
+
+        // zwiekszenie licznika w produkcjach
+        if ($added) {
+            $this->db->query('UPDATE  productions SET watchlist_count = watchlist_count + 1 WHERE id = :production_id');
+            $this->db->bind(':production_id', $movieId);
+            $this->db->execute();
+        }
+
+        return $added;
     }
 
     public function removeFromWatchlist($userId, $movieId) {
+        //usunięcie z watchlisty
         $this->db->query('DELETE FROM watchlist WHERE user_id = :user_id AND production_id = :production_id');
         $this->db->bind(':user_id', $userId);
         $this->db->bind(':production_id', $movieId);
-        return $this->db->execute();
+        $deleted = $this->db->execute();
+
+        // zmniejszenie licznika w produkcjach
+        if ($deleted) {
+            $this->db->query('UPDATE  productions SET watchlist_count = watchlist_count - 1 WHERE id = :production_id');
+            $this->db->bind(':production_id', $movieId);
+            $this->db->execute();
+        }
+
+        return $deleted;
     }
 
     public function getWatchlist($userId) {

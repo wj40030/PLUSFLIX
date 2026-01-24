@@ -12,7 +12,7 @@ class Recommended extends Controller {
     }
 
     public function index(): void {
-        $recommended = $this->recommendedModel->getSeriesData();
+        $recommended = $this->recommendedModel->getAllMovies();
         $data = [
             'title' => 'Polecane programy',
             'description' => 'To jest strona z polecanymi programami.',
